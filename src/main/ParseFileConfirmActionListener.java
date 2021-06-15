@@ -73,6 +73,7 @@ public class ParseFileConfirmActionListener {
 
         StringBuilder sb = new StringBuilder();
         sb.append("HuaWei四元组").append("\n");
+        // 字符串长度不足设定值用空格补齐，若使用tab键分隔的话使用"\t"
         sb.append(String.format("%-12s", "prodId")).append(String.format("%-16s", "mac")).append(String.format("%-36s", "secret")).append("cid").append("\n");
 
         FileInputStream fis = null;

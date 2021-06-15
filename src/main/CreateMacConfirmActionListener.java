@@ -1,8 +1,11 @@
 package main;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.swing.*;
@@ -162,15 +165,35 @@ public class CreateMacConfirmActionListener {
             XSSFWorkbook sheets = new XSSFWorkbook();
             // 创建工作表sheet
             Sheet sheet = sheets.createSheet();
+            // 设置列宽
+            sheet.setColumnWidth(0, 16 * 256);
+            sheet.setColumnWidth(1, 32 * 256);
+
+            //标题字体样式设置
+            XSSFFont titleFont = sheets.createFont();
+            titleFont.setFontHeightInPoints((short) 14);
+            titleFont.setColor(XSSFFont.COLOR_NORMAL);
+            titleFont.setFontName(" 宋体 ");
+            titleFont.setBold(true);
+
+            // 设置单元格风格为文本格式
+            XSSFCellStyle xssfCellStyle = sheets.createCellStyle();
+            xssfCellStyle.setDataFormat(sheets.createDataFormat().getFormat("@"));
+            xssfCellStyle.setFont(titleFont);
+            xssfCellStyle.setAlignment(HorizontalAlignment.CENTER_SELECTION);
+
             // 创建第一行
             Row row = sheet.createRow(0);
-            String[] title = {"序号", "MAC地址"};
-            // 创建列，写入title
-            Cell cell = null;
-            for (int i = 0; i < title.length; ++i) {
-                cell = row.createCell(i);
-                cell.setCellValue(title[i]);
-            }
+            row.setHeight((short) 450);
+
+            // 创建单元格，写入title
+            Cell cell = row.createCell(0);
+            cell.setCellValue("序号");
+            cell.setCellStyle(xssfCellStyle);
+            cell = row.createCell(1);
+            cell.setCellValue("MAC地址");
+            // 设置标题栏风格
+            cell.setCellStyle(xssfCellStyle);
 
             // 写入数据内容
             for (int i = 1; i <= macList.size(); ++i) {
@@ -181,6 +204,9 @@ public class CreateMacConfirmActionListener {
                 cell = nextRow.createCell(1);
                 cell.setCellValue(String.valueOf(macList.get(i-1)));
             }
+
+//            sheet.getRow(0).getCell(0).setCellStyle(xssfCellStyle);
+//            sheet.getRow(0).getCell(1).setCellStyle(xssfCellStyle);
 
             file.createNewFile();
             fos = new FileOutputStream(file);

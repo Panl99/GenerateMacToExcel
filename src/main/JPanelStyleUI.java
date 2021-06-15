@@ -117,8 +117,8 @@ public class JPanelStyleUI {
             }
         });
 
-        JLabel remindLabel = new JLabel("提示：mac地址最长支持32位16进制字符");
-        remindLabel.setBounds(10,160,300,20);
+        JLabel remindLabel = new JLabel("<html><body>提示：<br>1. mac地址格式为16进制字符；<br>2. mac地址最长支持32位。<body></html>");
+        remindLabel.setBounds(10,160,300,100);
         remindLabel.setForeground(Color.GRAY);
         generateMacPanel.add(remindLabel);
 
