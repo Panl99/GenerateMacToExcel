@@ -112,19 +112,34 @@ public class CreateMacConfirmActionListener {
 //            return false;
 //        }
 
+
+        if (!checkMacValid()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean checkMacValid() {
         for (int i = 0; i < startMac.length(); ++i) {
             char c = startMac.charAt(i);
             char c2 = endMac.charAt(i);
 
             int result = compareCharSize(c2, c);
             if (result > 0) {
+                // 限制一次生成的mac地址数，最多16^4=65536，即：***0000 - ***ffff，方法：判断索引i在不在后四位
+                // 原因：excel2010每个sheet最多支持16^5=1048576，开放倒数第五位的话，总共会生成1048576+1(title)条数据，写入excel时会错误失败。
+                if (startMac.length() > 4 && (startMac.length() - 1 - i) >= 4) {
+                    JOptionPane.showMessageDialog(frame, "不支持生成mac条数大于65536条！[index=" + i + "，字符（"+c+"|"+c2+"）]", "Error", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+
                 break;
             } else if (result < 0) {
-                JOptionPane.showMessageDialog(frame, "mac尾地址不能小于首地址[index=" + i + "]", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "mac结束地址不能小于起始地址[index=" + i + "，字符（"+c+"|"+c2+"）]", "Error", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
         }
-
         return true;
     }
 
