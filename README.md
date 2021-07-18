@@ -1,8 +1,13 @@
 mac地址生成工具
 
-![MacGenerator.png](/src/resources/static/image/MacGenerator.png)
+#### 2.0
 
-**功能：**
+![2.0需求.png](/src/resources/static/image/2.0需求.png)
+
+
+#### 1.0
+
+![MacGenerator.png](/src/resources/static/image/MacGenerator.png)
 
 1. 生成mac地址列表功能
     - mac起始地址、mac结束地址：不能为空；输入内容应为十六进制字符（0-9a-fA-F），工具会将大写转为小写，最终以小写字母展示；限制长度最大32位。
