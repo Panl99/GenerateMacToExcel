@@ -15,6 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 /**
  * @author lp
@@ -28,6 +29,7 @@ public class ParseFileConfirmActionListener {
     private String cid;
     private String filePath;
 
+    private final int maxTextLength = 64;
 
     public ParseFileConfirmActionListener(JFrame frame, JTextArea textArea, String productId, String cid, String filePath) {
         this.frame = frame;
@@ -43,11 +45,18 @@ public class ParseFileConfirmActionListener {
             JOptionPane.showMessageDialog(frame, "请先选择文件", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
+
+        if (!verifyText()) {
+            textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
+            textArea.append("【Error】文本格式有误！prodId=" + productId + "，cid=" + cid + "\n");
+            return;
+        }
+
         File file = new File(filePath);
         String content = parseExcelInfo(file);
         if (content.trim().length() == 0) {
             textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
-            textArea.append("【Error】发生错误，解析Excel内容为空! 退出！" + "\n");
+            textArea.append("【Error】解析Excel错误! 退出!" + "\n");
             return;
         }
 
@@ -58,7 +67,48 @@ public class ParseFileConfirmActionListener {
         textArea.append(content + "\n");
     }
 
+    /**
+     * 校验文本框内容格式
+     * @return
+     */
+    private boolean verifyText() {
+        if (productId == null || productId.trim().length() == 0) {
+            JOptionPane.showMessageDialog(frame, "prodId内容不能为空", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if (!Pattern.matches("[0-9a-zA-Z]+", productId)) {
+            JOptionPane.showMessageDialog(frame, "prodId只支持数字和字母格式：prodId="+productId, "Error", JOptionPane.ERROR_MESSAGE);
+            textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
+            textArea.append("【Error】prodId格式有误！prodId=" + productId + "\n");
+            return false;
+        }
+        if (productId.trim().length() > maxTextLength) {
+            JOptionPane.showMessageDialog(frame, "prodId最长支持64位：prodId="+productId, "Error", JOptionPane.ERROR_MESSAGE);
+            textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
+            textArea.append("【Error】prodId格式有误！prodId=" + productId + "\n");
+            return false;
+        }
 
+
+        if (cid == null || cid.trim().length() == 0) {
+            JOptionPane.showMessageDialog(frame, "cid内容不能为空", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if (!Pattern.matches("[0-9a-zA-Z]+", cid)) {
+            JOptionPane.showMessageDialog(frame, "cid只支持数字和字母格式：cid="+cid, "Error", JOptionPane.ERROR_MESSAGE);
+            textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
+            textArea.append("【Error】cid格式有误！cid=" + cid + "\n");
+            return false;
+        }
+        if (cid.trim().length() > maxTextLength) {
+            JOptionPane.showMessageDialog(frame, "cid最长支持64位：cid="+cid, "Error", JOptionPane.ERROR_MESSAGE);
+            textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
+            textArea.append("【Error】cid格式有误！cid=" + cid + "\n");
+            return false;
+        }
+
+        return true;
+    }
 
     /**
      * 解析文件
@@ -72,9 +122,9 @@ public class ParseFileConfirmActionListener {
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("HuaWei四元组").append("\n");
-        // 字符串长度不足设定值用空格补齐，若使用tab键分隔的话使用"\t"
-        sb.append(String.format("%-12s", "prodId")).append(String.format("%-16s", "mac")).append(String.format("%-36s", "secret")).append("cid").append("\n");
+        sb.append("Hilink四元组").append("\n");
+        // 要求用tab隔开 \t
+        sb.append("prodId").append("\t").append("mac").append("\t").append("secret").append("\t").append("cid").append("\n");
 
         FileInputStream fis = null;
         try {
@@ -98,7 +148,8 @@ public class ParseFileConfirmActionListener {
             for (int i = firstRowIndex; i <= lastRowIndex; i++) {
                 Row row = sheet.getRow(i);
                 if (row != null) {
-                    sb.append(String.format("%-12s", productId)).append(String.format("%-16s" ,row.getCell(1))).append(String.format("%-36s", row.getCell(2))).append(cid).append("\n");
+                    // 要求用tab隔开 \t
+                    sb.append(productId).append("\t").append(row.getCell(1)).append("\t").append(row.getCell(2)).append("\t").append(cid).append("\n");
                 }
             }
 
