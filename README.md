@@ -3,6 +3,7 @@ mac地址生成工具
 #### 2.0
 
 ![2.0需求.png](/src/resources/static/image/2.0需求.png)
+![2.0补充需求.png](src/resources/static/image/2.0补充需求.png)
 
 
 #### 1.0
