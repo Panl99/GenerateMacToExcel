@@ -50,21 +50,21 @@ public class CreateMacConfirmActionListener {
 
     public void actionPerformed(ActionEvent e) {
         if (!verifyMac()) {
-            textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
-            textArea.append("【Error】请检查mac地址是否正确！  mac起始地址：" + startMac + "  mac结束地址：" + endMac + "\n");
+            //textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
+            //textArea.append("【Error】请检查mac地址是否正确！  mac起始地址：" + startMac + "  mac结束地址：" + endMac + "\n");
             return;
         }
 
         if (!verifyText()) {
-            textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
-            textArea.append("【Error】prodId格式有误！prodId=" + prodId + "\n");
+            //textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
+            //textArea.append("【Error】prodId格式有误！prodId=" + prodId + "\n");
             return;
         }
 
         List<String> macList = generateMacList();
         if (macList == null || macList.size() == 0) {
-            textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
-            textArea.append("【Error】生成mac列表错误! 退出！" + "\n");
+            //textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
+            //textArea.append("【Error】生成mac列表错误! 退出！" + "\n");
             return;
         }
 
@@ -79,9 +79,9 @@ public class CreateMacConfirmActionListener {
         }
         writeToExcel(file, macList);
 
-        textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
-        textArea.append("【生成三元组申请表路径】" + file.getAbsolutePath() + "\n");
-        textArea.append("prodId=" + prodId + "，macList=" + macList + "，共计：" + macList.size() + "\n");
+        //textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
+        //textArea.append("【生成三元组申请表路径】" + file.getAbsolutePath() + "\n");
+        //textArea.append("prodId=" + prodId + "，macList=" + macList + "，共计：" + macList.size() + "\n");
     }
 
     /**
@@ -246,7 +246,7 @@ public class CreateMacConfirmActionListener {
 
         } catch (IOException e) {
             JOptionPane.showMessageDialog(frame, "写入Excel文件异常！", "Error", JOptionPane.ERROR_MESSAGE);
-            textArea.append(e + "\n");
+            //textArea.append(e + "\n");
         } finally {
             try {
                 if (fos != null) {
@@ -255,8 +255,8 @@ public class CreateMacConfirmActionListener {
                     JOptionPane.showMessageDialog(frame, "写入Excel完成", "done", JOptionPane.INFORMATION_MESSAGE);
                 }
             } catch (IOException e) {
-                textArea.append("writeToExcel关闭文件流异常" + "\n");
-                textArea.append(e + "\n");
+                //textArea.append("writeToExcel关闭文件流异常" + "\n");
+                //textArea.append(e + "\n");
             }
         }
     }

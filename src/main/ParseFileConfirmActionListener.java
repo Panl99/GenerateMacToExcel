@@ -47,24 +47,24 @@ public class ParseFileConfirmActionListener {
         }
 
         if (!verifyText()) {
-            textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
-            textArea.append("【Error】文本格式有误！prodId=" + productId + "，cid=" + cid + "\n");
+            //textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
+            //textArea.append("【Error】文本格式有误！prodId=" + productId + "，cid=" + cid + "\n");
             return;
         }
 
         File file = new File(filePath);
         String content = parseExcelInfo(file);
         if (content.trim().length() == 0) {
-            textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
-            textArea.append("【Error】解析Excel错误! 退出!" + "\n");
+            //textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
+            //textArea.append("【Error】解析Excel错误! 退出!" + "\n");
             return;
         }
 
         // 写入txt
         writeToTxt(file.getParent(), content);
 
-        textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
-        textArea.append(content + "\n");
+        //textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
+        //textArea.append(content + "\n");
     }
 
     /**
@@ -78,14 +78,14 @@ public class ParseFileConfirmActionListener {
         }
         if (!Pattern.matches("[0-9a-zA-Z]+", productId)) {
             JOptionPane.showMessageDialog(frame, "prodId只支持数字和字母格式：prodId="+productId, "Error", JOptionPane.ERROR_MESSAGE);
-            textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
-            textArea.append("【Error】prodId格式有误！prodId=" + productId + "\n");
+            //textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
+            //textArea.append("【Error】prodId格式有误！prodId=" + productId + "\n");
             return false;
         }
         if (productId.trim().length() > maxTextLength) {
             JOptionPane.showMessageDialog(frame, "prodId最长支持64位：prodId="+productId, "Error", JOptionPane.ERROR_MESSAGE);
-            textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
-            textArea.append("【Error】prodId格式有误！prodId=" + productId + "\n");
+            //textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
+            //textArea.append("【Error】prodId格式有误！prodId=" + productId + "\n");
             return false;
         }
 
@@ -96,14 +96,14 @@ public class ParseFileConfirmActionListener {
         }
         if (!Pattern.matches("[0-9a-zA-Z]+", cid)) {
             JOptionPane.showMessageDialog(frame, "cid只支持数字和字母格式：cid="+cid, "Error", JOptionPane.ERROR_MESSAGE);
-            textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
-            textArea.append("【Error】cid格式有误！cid=" + cid + "\n");
+            //textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
+            //textArea.append("【Error】cid格式有误！cid=" + cid + "\n");
             return false;
         }
         if (cid.trim().length() > maxTextLength) {
             JOptionPane.showMessageDialog(frame, "cid最长支持64位：cid="+cid, "Error", JOptionPane.ERROR_MESSAGE);
-            textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
-            textArea.append("【Error】cid格式有误！cid=" + cid + "\n");
+            //textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
+            //textArea.append("【Error】cid格式有误！cid=" + cid + "\n");
             return false;
         }
 
@@ -155,7 +155,7 @@ public class ParseFileConfirmActionListener {
 
         } catch (IOException | InvalidFormatException e) {
             JOptionPane.showMessageDialog(frame, "解析excel文件异常！", "Error", JOptionPane.ERROR_MESSAGE);
-            textArea.append(e + "\n");
+            //textArea.append(e + "\n");
             return "";
         } finally {
             try {
@@ -163,8 +163,8 @@ public class ParseFileConfirmActionListener {
                     fis.close();
                 }
             } catch (IOException e) {
-                textArea.append("writeToTxt关闭文件流异常" + "\n");
-                textArea.append(e + "\n");
+                //textArea.append("writeToTxt关闭文件流异常" + "\n");
+                //textArea.append(e + "\n");
             }
 
         }
@@ -192,7 +192,7 @@ public class ParseFileConfirmActionListener {
 
         } catch (IOException e) {
             JOptionPane.showMessageDialog(frame, "写入txt文件异常！", "Error", JOptionPane.ERROR_MESSAGE);
-            textArea.append(e + "\n");
+            //textArea.append(e + "\n");
         } finally {
             try {
                 if (bw != null) {
@@ -201,8 +201,8 @@ public class ParseFileConfirmActionListener {
                     JOptionPane.showMessageDialog(frame, "写入Txt完成", "done", JOptionPane.INFORMATION_MESSAGE);
                 }
             } catch (IOException e) {
-                textArea.append("writeToTxt关闭文件流异常" + "\n");
-                textArea.append(e + "\n");
+                //textArea.append("writeToTxt关闭文件流异常" + "\n");
+                //textArea.append(e + "\n");
             }
         }
 
