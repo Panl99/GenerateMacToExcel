@@ -168,6 +168,7 @@ public class JTabbedPaneStyleUI {
 
 //        frame.add(PidFrame.createPidContainer());
 
+
         // 确定按钮
         JButton confirmButton = new JButton("生成mac地址");
         confirmButton.setBounds(10, 500, 120, 25);
@@ -205,68 +206,62 @@ public class JTabbedPaneStyleUI {
         frame.setVisible(true);
     }
 
-//    JPanel jpc;//存放组件的面板
-//    JScrollPane jsp;//滚动面板
-//    JButton jbAdd, jbRemove, jbReset;// 增加,删除按钮
-//    int index = 1;//开始的字符
-//    private void initPidContainer() {
-//        jpc = new JPanel();
-//        // 盒子布局.从上到下
-//        jpc.setLayout(new BoxLayout(jpc, BoxLayout.Y_AXIS));
-//        // 滚动面板
-//        jsp = new JScrollPane(jpc, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-//        new Container().add(jsp);
-//
-//        jbAdd = new JButton("增加");
-//        jbAdd.addActionListener(new PidJBListener());
-//        jbRemove = new JButton("删除");
-//        jbRemove.addActionListener(new PidJBListener());
-//        jbReset = new JButton("重置");
-//        jbReset.addActionListener(new PidJBListener());
-//
-//
-//        int index = 1;//开始的字符
-//
-//
-//    }
-//
-//    public JPanel createPidContainer() {
-//        return new DemoFrame1().jpc;
-//    }
-//
-//    class PidJBListener implements ActionListener {
-//
-//        @Override
-//        public void actionPerformed(ActionEvent e) {
-//            JButton jb = (JButton) e.getSource();
-//            if (jb == jbAdd) {//当点击添加按钮时
-//                jpc.add(new MyJPanel(index));//添加1个自己定义的面板组件
-//                index++;//自加1
-//                myUpdateUI();//刷新界面
-//            } else if (jb == jbRemove) {//当点击删除按钮时
-//                if (jpc.getComponentCount() > 0) { // 得到jpc里的MyJPanel的组件数量
-//                    jpc.remove(jpc.getComponentCount() - 1);//删除末尾的一个组件 ,
-//                    index -= 1;
-//                    myUpdateUI();
-//                }
-//            } else if (jb == jbReset) {
-//                for (int i = 0; i < jpc.getComponentCount(); i++) {
-//                    MyJPanel mjp = (MyJPanel) jpc.getComponent(i);
-//                    //也就是说取值,可以根据文本框所在的位置来取
-//                    System.out.println("第" + (i + 1) + "个文本框的值是" + mjp.getJTFValue());
-//                    mjp.setJTFValue("");//清空,重置
-//                    System.out.println("第" + (i + 1) + "个文本框的值已清空重置");
-//                }
-//            }
-//        }
-//
-//        //刷新界面函数
-//        private void myUpdateUI() {
-//            SwingUtilities.updateComponentTreeUI(this);//添加或删除组件后,更新窗口
-//            JScrollBar jsb = jsp.getVerticalScrollBar();//得到垂直滚动条
-//            jsb.setValue(jsb.getMaximum());//把滚动条位置设置到最下面
-//        }
-//    }
+    JPanel jpc;//存放组件的面板
+    JScrollPane jsp;//滚动面板
+    JButton jbAdd, jbRemove, jbReset;// 增加,删除按钮
+    int index = 1;//开始的字符
+    public Container createPidContainer() {
+        jpc = new JPanel();
+        // 盒子布局.从上到下
+        jpc.setLayout(new BoxLayout(jpc, BoxLayout.Y_AXIS));
+        // 滚动面板
+        jsp = new JScrollPane(jpc, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        Container c = new Container();
+        c.add(jsp);
+
+        jbAdd = new JButton("增加");
+        jbAdd.addActionListener(new PidJBListener());
+        jbRemove = new JButton("删除");
+        jbRemove.addActionListener(new PidJBListener());
+        jbReset = new JButton("重置");
+        jbReset.addActionListener(new PidJBListener());
+
+        return c;
+    }
+
+    class PidJBListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JButton jb = (JButton) e.getSource();
+            if (jb == jbAdd) {//当点击添加按钮时
+                jpc.add(new MyJPanel(index));//添加1个自己定义的面板组件
+                index++;//自加1
+                myUpdateUI();//刷新界面
+            } else if (jb == jbRemove) {//当点击删除按钮时
+                if (jpc.getComponentCount() > 0) { // 得到jpc里的MyJPanel的组件数量
+                    jpc.remove(jpc.getComponentCount() - 1);//删除末尾的一个组件 ,
+                    index -= 1;
+                    myUpdateUI();
+                }
+            } else if (jb == jbReset) {
+                for (int i = 0; i < jpc.getComponentCount(); i++) {
+                    MyJPanel mjp = (MyJPanel) jpc.getComponent(i);
+                    //也就是说取值,可以根据文本框所在的位置来取
+                    System.out.println("第" + (i + 1) + "个文本框的值是" + mjp.getJTFValue());
+                    mjp.setJTFValue("");//清空,重置
+                    System.out.println("第" + (i + 1) + "个文本框的值已清空重置");
+                }
+            }
+        }
+
+        //刷新界面函数
+        private void myUpdateUI() {
+            SwingUtilities.updateComponentTreeUI(jsp);//添加或删除组件后,更新窗口
+            JScrollBar jsb = jsp.getVerticalScrollBar();//得到垂直滚动条
+            jsb.setValue(jsb.getMaximum());//把滚动条位置设置到最下面
+        }
+    }
 
     //本类继承自JFrame 实现了 ActionListener接口
     static class PidFrame extends JFrame implements ActionListener {
