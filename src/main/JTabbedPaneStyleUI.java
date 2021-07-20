@@ -30,7 +30,7 @@ public class JTabbedPaneStyleUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setBounds(500, 300, 800, 600);
         // 禁止窗口拉伸
-        frame.setResizable(false);
+//        frame.setResizable(false);
 
         //创建一个选项卡容器，添加到顶层容器中
         JTabbedPane tp = new JTabbedPane();
@@ -210,11 +210,11 @@ public class JTabbedPaneStyleUI {
         return generateMacPanel;
     }
 
+
+    // 选项卡2: 生成四元组txt
     private JPanel createTxtPanel() {
-        // 选项卡2: 生成四元组txt
         JPanel generateTxtPanel = new JPanel();
         generateTxtPanel.setLayout(new GridBagLayout());
-//        generateTxtPanel.setLayout(new BoxLayout(generateTxtPanel, BoxLayout.Y_AXIS));
 
         GridBagConstraints c1 = new GridBagConstraints();
         c1.gridx = 0;
@@ -281,7 +281,6 @@ public class JTabbedPaneStyleUI {
                     File file = jfc.getSelectedFile();
                     defaultFilePath = file;
                     showFileLabel.setText(file.getAbsolutePath());
-//                    textArea.append("【三元组秘钥文件】" + file.getAbsolutePath() + " \n");
                 }
 
             }
@@ -298,13 +297,14 @@ public class JTabbedPaneStyleUI {
         c5.anchor = GridBagConstraints.WEST;
         // 确定按钮
         JButton telinkConfirmButton = new JButton("生成telink四元组");
-        //generateTxtPanel.add(Box.createVerticalStrut(20));
         generateTxtPanel.add(telinkConfirmButton, c5);
 
         telinkConfirmButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                new ParseFileConfirmActionListener(frame, null, productIdText.getText().trim(), cIdText.getText().trim(), showFileLabel.getText());
+                String pidTxtValue = ((JPanelFactory) generateTxtPanel.getComponent(0)).getJTFValue().trim();
+                String cidTxtValue = ((JPanelFactory) generateTxtPanel.getComponent(1)).getJTFValue().trim();
+                new ParseFileConfirmActionListener(frame, null, pidTxtValue, cidTxtValue, showFileLabel.getText());
                 JOptionPane.showMessageDialog(frame, "telinkConfirmButton", "Warning", JOptionPane.WARNING_MESSAGE);
                 // TODO save file
                 String ss = "aaaaaa \n tttttt";
