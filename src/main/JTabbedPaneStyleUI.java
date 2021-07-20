@@ -1,11 +1,17 @@
 package main;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -15,24 +21,44 @@ import java.util.Date;
  * @description
  **/
 public class JTabbedPaneStyleUI {
+    private JFrame frame;
 
     public void createGUI() {
 
-        JFrame frame = new JFrame();
+        frame = new JFrame();
         frame.setTitle("HiLink平台三元组自动生成工具_2.0");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setBounds(500, 300, 800, 600);
-        // 进制窗口拉伸
+        // 禁止窗口拉伸
         frame.setResizable(false);
 
         //创建一个选项卡容器，添加到顶层容器中
         JTabbedPane tp = new JTabbedPane();
         frame.setContentPane(tp);
 
-        // 选项卡1: 生成mac地址
+        //添加选项卡容器，并且设置其中每个选项卡的标签以及其是否可启用
+        tp.addTab("generateMacPanel", createMacPanel());
+        tp.setEnabledAt(0, true);
+        tp.setTitleAt(0, "生成mac地址");
+
+        tp.addTab("generateTxtPanel", createTxtPanel());
+        tp.setEnabledAt(1, true);
+        tp.setTitleAt(1, "生成四元组txt");
+
+        //设置其大小以及其选项卡的位置方向
+        tp.setPreferredSize(new Dimension(500, 300));
+        tp.setTabPlacement(JTabbedPane.TOP);
+        //设置选项卡在容器内的显示形式
+        tp.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+
+        // 窗口可见
+        frame.setVisible(true);
+    }
+
+    // 选项卡1: 生成mac地址
+    private JPanel createMacPanel() {
         JPanel generateMacPanel = new JPanel();
         generateMacPanel.setLayout(null);
-//        generateMacPanel.setBorder(BorderFactory.createTitledBorder("生成mac地址"));
         generateMacPanel.setSize(800, 600);
 
         JLabel macStartLabel = new JLabel("mac地址:");
@@ -181,30 +207,225 @@ public class JTabbedPaneStyleUI {
             }
         });
 
+        return generateMacPanel;
+    }
 
-        //添加选项卡容器，并且设置其中每个选项卡的标签以及其是否可启用
-        tp.addTab("generateMacPanel", generateMacPanel);
-        tp.setEnabledAt(0, true);
-        tp.setTitleAt(0, "生成mac地址");
-
-
+    private JPanel createTxtPanel() {
         // 选项卡2: 生成四元组txt
         JPanel generateTxtPanel = new JPanel();
-        generateTxtPanel.setLayout(null);
+        generateTxtPanel.setLayout(new GridBagLayout());
+//        generateTxtPanel.setLayout(new BoxLayout(generateTxtPanel, BoxLayout.Y_AXIS));
 
-        tp.addTab("generateTxtPanel", generateTxtPanel);
-        tp.setEnabledAt(1, true);
-        tp.setTitleAt(1, "生成四元组txt");
+        GridBagConstraints c1 = new GridBagConstraints();
+        c1.gridx = 0;
+        c1.gridy = 0;
+        c1.weightx = 1;
+        c1.weighty = 0;
+        c1.fill = GridBagConstraints.NONE;
+        c1.insets.top = 10;
+        c1.insets.left = 5;
+        c1.anchor = GridBagConstraints.WEST;
+        generateTxtPanel.add(new JPanelFactory("pid", null).createPanel(), c1);
 
-        //设置其大小以及其选项卡的位置方向
-        tp.setPreferredSize(new Dimension(500, 300));
-        tp.setTabPlacement(JTabbedPane.TOP);
-        //设置选项卡在容器内的显示形式
-        tp.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+        GridBagConstraints c2 = new GridBagConstraints();
+        c2.gridx = 0;
+        c2.gridy = 1;
+        c2.weightx = 1.0;
+        c2.weighty = 0;
+        c2.fill = GridBagConstraints.NONE;
+        c2.insets.top = 10;
+        c2.insets.left = 5;
+        c2.anchor = GridBagConstraints.WEST;
+        generateTxtPanel.add(new JPanelFactory("cid", null).createPanel(), c2);
 
-        // 窗口可见
-        frame.setVisible(true);
+        GridBagConstraints c3 = new GridBagConstraints();
+        c3.gridx = 0;
+        c3.gridy = 2;
+        c3.weightx = 1.0;
+        c3.weighty = 0;
+        c3.fill = GridBagConstraints.NONE;
+        c3.insets.top = 10;
+        c3.insets.left = 5;
+        c3.anchor = GridBagConstraints.WEST;
+        JButton chooseFile = new JButton("选择三元组文件...");
+        chooseFile.setBackground(new Color(238, 238, 238));
+        generateTxtPanel.add(chooseFile, c3);
+
+        GridBagConstraints c4 = new GridBagConstraints();
+        c4.gridx = 0;
+        c4.gridy = 3;
+        c4.weightx = 1.0;
+        c4.weighty = 0;
+        c4.fill = GridBagConstraints.HORIZONTAL;
+        c4.insets.top = 10;
+        c4.insets.left = 5;
+        c4.anchor = GridBagConstraints.WEST;
+        JLabel showFileLabel = new JLabel();
+        generateTxtPanel.add(showFileLabel, c4);
+
+        chooseFile.addActionListener(new ActionListener() {
+            private File defaultFilePath;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (defaultFilePath == null) {
+                    defaultFilePath = FileSystemView.getFileSystemView().getHomeDirectory();
+                }
+
+                JFileChooser jfc = new JFileChooser();
+                jfc.setCurrentDirectory(defaultFilePath);
+                jfc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                jfc.addChoosableFileFilter(new FileNameExtensionFilter("Excel(*.xls,*.xlsx)", "xls", "xlsx"));
+                int isChooseFile = jfc.showOpenDialog(frame);
+                if (isChooseFile == JFileChooser.APPROVE_OPTION) {
+                    File file = jfc.getSelectedFile();
+                    defaultFilePath = file;
+                    showFileLabel.setText(file.getAbsolutePath());
+//                    textArea.append("【三元组秘钥文件】" + file.getAbsolutePath() + " \n");
+                }
+
+            }
+        });
+
+        GridBagConstraints c5 = new GridBagConstraints();
+        c5.gridx = 0;
+        c5.gridy = 4;
+        c5.weightx = 1.0;
+        c5.weighty = 0;
+        c5.fill = GridBagConstraints.NONE;
+        c5.insets.top = 10;
+        c5.insets.left = 5;
+        c5.anchor = GridBagConstraints.WEST;
+        // 确定按钮
+        JButton telinkConfirmButton = new JButton("生成telink四元组");
+        //generateTxtPanel.add(Box.createVerticalStrut(20));
+        generateTxtPanel.add(telinkConfirmButton, c5);
+
+        telinkConfirmButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                new ParseFileConfirmActionListener(frame, null, productIdText.getText().trim(), cIdText.getText().trim(), showFileLabel.getText());
+                JOptionPane.showMessageDialog(frame, "telinkConfirmButton", "Warning", JOptionPane.WARNING_MESSAGE);
+                // TODO save file
+                String ss = "aaaaaa \n tttttt";
+                JFileChooser jfc = new javax.swing.JFileChooser();
+                if(JFileChooser.APPROVE_OPTION == jfc.showSaveDialog(new JPanel())) {
+                    File saveFile = jfc.getSelectedFile();
+                    try {
+                        if (!saveFile.exists()) {
+                            saveFile.createNewFile();
+                        }
+                        BufferedWriter bw = new BufferedWriter(new FileWriter(saveFile));
+                        bw.write(ss);
+                        bw.close();
+
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(frame, "保存telink文件发生错误！", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
+
+        GridBagConstraints c6 = new GridBagConstraints();
+        c6.gridx = 0;
+        c6.gridy = 5;
+        c6.weightx = 1.0;
+        c6.weighty = 0;
+        c6.fill = GridBagConstraints.NONE;
+        c6.insets.top = 10;
+        c6.insets.left = 5;
+        c6.anchor = GridBagConstraints.WEST;
+        // 确定按钮
+        JButton realtekConfirmButton = new JButton("生成realtek三元组");
+        //generateTxtPanel.add(Box.createVerticalStrut(20));
+        generateTxtPanel.add(realtekConfirmButton, c6);
+
+        realtekConfirmButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                new ParseFileConfirmActionListener(frame, null, productIdText.getText().trim(), cIdText.getText().trim(), showFileLabel.getText());
+                JOptionPane.showMessageDialog(frame, "realtekConfirmButton", "Warning", JOptionPane.WARNING_MESSAGE);
+                // TODO save file
+                String ss = "aaaaaa \n tttttt";
+                JFileChooser jfc = new javax.swing.JFileChooser();
+                if(JFileChooser.APPROVE_OPTION == jfc.showSaveDialog(new JPanel())) {
+                    File saveFile = jfc.getSelectedFile();
+                    try {
+                        if (!saveFile.exists()) {
+                            saveFile.createNewFile();
+                        }
+                        BufferedWriter bw = new BufferedWriter(new FileWriter(saveFile));
+                        bw.write(ss);
+                        bw.close();
+
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(frame, "保存realtek文件发生错误！", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+            }
+        });
+
+        GridBagConstraints c7 = new GridBagConstraints();
+        c7.gridx = 0;
+        c7.gridy = 6;
+        c7.weightx = 1.0;
+        c7.weighty = 1.0;
+        c7.fill = GridBagConstraints.BOTH;
+        c7.insets.top = 10;
+        c7.insets.left = 5;
+        c7.anchor = GridBagConstraints.WEST;
+        JLabel remindLabel2 = new JLabel();
+        remindLabel2.setText("<html><body>提示：<br> 1. pid非空，只支持数字和字母，区分大小写，最长64位； <br> 2. 生成realtek方案的三元组文件时，pid会转换为10进制；(telink方案pid不变) <br> 3. telink方案: cid非空，只支持数字和字母，区分大小写，最长64位；(realtek方案不处理cid) <br> 4. 点击按钮选择文件保存位置，输入文件名生成对应文件。 <body></html>");
+        remindLabel2.setForeground(Color.GRAY);
+        //generateTxtPanel.add(Box.createVerticalStrut(20));
+        generateTxtPanel.add(remindLabel2, c7);
+
+        return generateTxtPanel;
     }
+
+
+    class JPanelFactory extends JPanel {
+        public JTextField jtf;
+        public JLabel jl;
+        public JPanelFactory(String labelName, Integer index) {
+            if (index == null) {
+                jl = new JLabel(labelName + ": ");
+            } else {
+                jl = new JLabel(labelName + index + ": ");
+            }
+            jtf = new JTextField(20);
+//            jtf.setSize(160, 25);
+//            this.setLayout(new FlowLayout(FlowLayout.LEFT));
+//            this.add(jl);
+//            this.add(jtf);
+
+//            add(jl);
+//            add(jtf);
+        }
+
+        public JPanel createPanel() {
+            JPanel panel = new JPanel();
+            panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+            // 加入一个不可见的Strut，使Panel对顶部留出一定的空间
+            panel.add(Box.createVerticalStrut(10));
+            panel.add(jl);
+            panel.add(jtf);
+            return panel;
+        }
+
+        public String getJTFValue() {
+            return jtf.getText();
+        }
+        public void setJTFValue(String value) {
+            jtf.setText(value);
+        }
+    }
+
+
+
+
+
+
 
     JPanel jpc;//存放组件的面板
     JScrollPane jsp;//滚动面板
