@@ -190,7 +190,7 @@ public class JPanelStyleUI {
         confirmButton2.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new ParseFileConfirmActionListener(frame, textArea, productIdText.getText().trim(), cIdText.getText().trim(), showFileLabel.getText());
+                new ParseFileConfirmActionListener(frame, "telink", productIdText.getText().trim(), cIdText.getText().trim(), showFileLabel.getText());
             }
         });
 

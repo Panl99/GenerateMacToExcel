@@ -22,8 +22,11 @@ public class ConvertUtil {
      * @return
      */
     public static String ascii2hex(String s) {
-        int n = (char) (s.charAt(0));
-        return Integer.toHexString(n);
+        String result = "";
+        for (char c : s.toCharArray()) {
+            result += Integer.toHexString(c);
+        }
+        return result;
     }
 
     /**
@@ -32,8 +35,11 @@ public class ConvertUtil {
      * @return
      */
     public static String ascii2decimal(String s) {
-        char c = s.charAt(0);
-        return String.valueOf((int) c);
+        String result = "";
+        for (char c : s.toCharArray()) {
+            result += String.valueOf((int) c);
+        }
+        return result;
     }
 
     /**
@@ -48,9 +54,9 @@ public class ConvertUtil {
 
     public static void main(String[] args) {
         System.out.println("hex2ascii(\"61\") = " + hex2ascii("61")); // a
-        System.out.println("ascii2hex(\"A\") = " + ascii2hex("A")); // 41
+        System.out.println("ascii2hex(\"abcABC1590\") = " + ascii2hex("abcABC1590")); // 61626341424331353930
 
-        System.out.println("char2decimal(\"a\") = " + ascii2decimal("a")); //97
+        System.out.println("ascii2decimal(\"abcABC1590\") = " + ascii2decimal("abcABC1590")); // 97989965666749535748
         System.out.println("char2ascii(128) = " + decimal2ascii(126)); // ~
     }
 }

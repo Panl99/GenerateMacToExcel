@@ -225,7 +225,8 @@ public class JTabbedPaneStyleUI {
         c1.insets.top = 10;
         c1.insets.left = 5;
         c1.anchor = GridBagConstraints.WEST;
-        generateTxtPanel.add(new JPanelFactory("pid", null).createPanel(), c1);
+        JPanel pidPanel = new JPanelFactory("pid", null).createPanel();
+        generateTxtPanel.add(pidPanel, c1);
 
         GridBagConstraints c2 = new GridBagConstraints();
         c2.gridx = 0;
@@ -236,7 +237,8 @@ public class JTabbedPaneStyleUI {
         c2.insets.top = 10;
         c2.insets.left = 5;
         c2.anchor = GridBagConstraints.WEST;
-        generateTxtPanel.add(new JPanelFactory("cid", null).createPanel(), c2);
+        JPanel cidPanel = new JPanelFactory("cid", null).createPanel();
+        generateTxtPanel.add(cidPanel, c2);
 
         GridBagConstraints c3 = new GridBagConstraints();
         c3.gridx = 0;
@@ -302,27 +304,9 @@ public class JTabbedPaneStyleUI {
         telinkConfirmButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String pidTxtValue = ((JPanelFactory) generateTxtPanel.getComponent(0)).getJTFValue().trim();
-                String cidTxtValue = ((JPanelFactory) generateTxtPanel.getComponent(1)).getJTFValue().trim();
-                new ParseFileConfirmActionListener(frame, null, pidTxtValue, cidTxtValue, showFileLabel.getText());
-                JOptionPane.showMessageDialog(frame, "telinkConfirmButton", "Warning", JOptionPane.WARNING_MESSAGE);
-                // TODO save file
-                String ss = "aaaaaa \n tttttt";
-                JFileChooser jfc = new javax.swing.JFileChooser();
-                if(JFileChooser.APPROVE_OPTION == jfc.showSaveDialog(new JPanel())) {
-                    File saveFile = jfc.getSelectedFile();
-                    try {
-                        if (!saveFile.exists()) {
-                            saveFile.createNewFile();
-                        }
-                        BufferedWriter bw = new BufferedWriter(new FileWriter(saveFile));
-                        bw.write(ss);
-                        bw.close();
-
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(frame, "保存telink文件发生错误！", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
+                String pidTxtValue = ((JTextField) pidPanel.getComponent(2)).getText().trim();
+                String cidTxtValue = ((JTextField) cidPanel.getComponent(2)).getText().trim();
+                new ParseFileConfirmActionListener(frame, "telink", pidTxtValue, cidTxtValue, showFileLabel.getText());
             }
         });
 
@@ -343,25 +327,9 @@ public class JTabbedPaneStyleUI {
         realtekConfirmButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                new ParseFileConfirmActionListener(frame, null, productIdText.getText().trim(), cIdText.getText().trim(), showFileLabel.getText());
-                JOptionPane.showMessageDialog(frame, "realtekConfirmButton", "Warning", JOptionPane.WARNING_MESSAGE);
-                // TODO save file
-                String ss = "aaaaaa \n tttttt";
-                JFileChooser jfc = new javax.swing.JFileChooser();
-                if(JFileChooser.APPROVE_OPTION == jfc.showSaveDialog(new JPanel())) {
-                    File saveFile = jfc.getSelectedFile();
-                    try {
-                        if (!saveFile.exists()) {
-                            saveFile.createNewFile();
-                        }
-                        BufferedWriter bw = new BufferedWriter(new FileWriter(saveFile));
-                        bw.write(ss);
-                        bw.close();
-
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(frame, "保存realtek文件发生错误！", "Error", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
+                String pidTxtValue = ((JTextField) pidPanel.getComponent(2)).getText().trim();
+                String cidTxtValue = ((JTextField) cidPanel.getComponent(2)).getText().trim();
+                new ParseFileConfirmActionListener(frame, "realtek", pidTxtValue, cidTxtValue, showFileLabel.getText());
             }
         });
 
@@ -387,6 +355,7 @@ public class JTabbedPaneStyleUI {
     class JPanelFactory extends JPanel {
         public JTextField jtf;
         public JLabel jl;
+
         public JPanelFactory(String labelName, Integer index) {
             if (index == null) {
                 jl = new JLabel(labelName + ": ");
@@ -416,21 +385,18 @@ public class JTabbedPaneStyleUI {
         public String getJTFValue() {
             return jtf.getText();
         }
+
         public void setJTFValue(String value) {
             jtf.setText(value);
         }
     }
 
 
-
-
-
-
-
     JPanel jpc;//存放组件的面板
     JScrollPane jsp;//滚动面板
     JButton jbAdd, jbRemove, jbReset;// 增加,删除按钮
     int index = 1;//开始的字符
+
     public Container createPidContainer() {
         jpc = new JPanel();
         // 盒子布局.从上到下
