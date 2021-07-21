@@ -8,12 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * @author lp
@@ -58,37 +53,97 @@ public class JTabbedPaneStyleUI {
     // 选项卡1: 生成mac地址
     private JPanel createMacPanel() {
         JPanel generateMacPanel = new JPanel();
-        generateMacPanel.setLayout(null);
-        generateMacPanel.setSize(800, 600);
+        generateMacPanel.setLayout(new GridBagLayout());
 
-        JLabel macStartLabel = new JLabel("mac地址:");
-        macStartLabel.setBounds(10, 20, 60, 25);
-        generateMacPanel.add(macStartLabel);
-
-        JTextField macStartText = new JTextField(20);
+        // mac地址栏
+        JPanel macStartPanel = new JPanelFactory("mac地址", null).createPanel();
+        JTextField macStartText = (JTextField) macStartPanel.getComponent(2);
         macStartText.setText("mac起始地址");
         macStartText.setForeground(Color.GRAY);
-        macStartText.setBounds(80, 20, 160, 25);
-        generateMacPanel.add(macStartText);
 
         JLabel showStartMacLengthLabel = new JLabel();
-        showStartMacLengthLabel.setBounds(240, 20, 20, 20);
-        generateMacPanel.add(showStartMacLengthLabel);
 
         JLabel macDelimiterLabel = new JLabel(" — ");
-        macDelimiterLabel.setBounds(260, 20, 20, 25);
-        generateMacPanel.add(macDelimiterLabel);
 
-
-        JTextField macEndText = new JTextField(20);
+        JPanel macEndPanel = new JPanelFactory(null, null).createPanel();
+        JTextField macEndText = (JTextField) macEndPanel.getComponent(2);
         macEndText.setText("mac结束地址");
         macEndText.setForeground(Color.GRAY);
-        macEndText.setBounds(300, 20, 160, 25);
-        generateMacPanel.add(macEndText);
 
         JLabel showEndMacLengthLabel = new JLabel();
-        showEndMacLengthLabel.setBounds(460, 20, 20, 20);
-        generateMacPanel.add(showEndMacLengthLabel);
+
+        JPanel macPanel = new JPanel();
+        macPanel.setLayout(new BoxLayout(macPanel, BoxLayout.X_AXIS));
+        macPanel.add(Box.createVerticalStrut(10));
+        macPanel.add(macStartPanel);
+        macPanel.add(showStartMacLengthLabel);
+        macPanel.add(macDelimiterLabel);
+        macPanel.add(macEndPanel);
+        macPanel.add(showEndMacLengthLabel);
+
+        GridBagConstraints c00 = new GridBagConstraints();
+        c00.gridx = 0;
+        c00.gridy = 0;
+        c00.weightx = 1;
+        c00.weighty = 0;
+        c00.fill = GridBagConstraints.NONE;
+        c00.insets.top = 10;
+        c00.insets.left = 5;
+        c00.anchor = GridBagConstraints.WEST;
+        generateMacPanel.add(macPanel, c00);
+
+        // pid栏
+        GridBagConstraints c01 = new GridBagConstraints();
+        c01.gridx = 0;
+        c01.gridy = 1;
+        c01.weightx = 1;
+        c01.weighty = 1;
+        c01.fill = GridBagConstraints.BOTH;
+        c01.insets.top = 10;
+        c01.insets.left = 5;
+        c01.anchor = GridBagConstraints.WEST;
+        // TODO
+        generateMacPanel.add(macPanel, c01);
+
+
+        // 添加pid按钮栏
+        GridBagConstraints c02 = new GridBagConstraints();
+        c02.gridx = 0;
+        c02.gridy = 1;
+        c02.weightx = 1;
+        c02.weighty = 0;
+        c02.fill = GridBagConstraints.NONE;
+        c02.insets.top = 10;
+        c02.insets.left = 2;
+        c02.anchor = GridBagConstraints.WEST;
+
+
+//        JTextField macStartText = new JTextField(20);
+//        macStartText.setText("mac起始地址");
+//        macStartText.setForeground(Color.GRAY);
+//        macStartText.setBounds(80, 20, 160, 25);
+//        generateMacPanel.add(macStartText);
+
+        GridBagConstraints c03 = new GridBagConstraints();
+        c03.gridx = 0;
+        c03.gridy = 1;
+        c03.weightx = 1;
+        c03.weighty = 0;
+        c03.fill = GridBagConstraints.NONE;
+        c03.insets.top = 10;
+        c03.insets.left = 2;
+        c03.anchor = GridBagConstraints.WEST;
+
+
+//        JTextField macEndText = new JTextField(20);
+//        macEndText.setText("mac结束地址");
+//        macEndText.setForeground(Color.GRAY);
+//        macEndText.setBounds(300, 20, 160, 25);
+//        generateMacPanel.add(macEndText);
+
+//        JLabel showEndMacLengthLabel = new JLabel();
+//        showEndMacLengthLabel.setBounds(460, 20, 20, 20);
+//        generateMacPanel.add(showEndMacLengthLabel);
 
         macStartText.addFocusListener(new FocusListener() {
             @Override
@@ -362,8 +417,10 @@ public class JTabbedPaneStyleUI {
             } else {
                 jl = new JLabel(labelName + index + ": ");
             }
+            if (labelName == null) {
+                jl = new JLabel();
+            }
             jtf = new JTextField(20);
-//            jtf.setSize(160, 25);
 //            this.setLayout(new FlowLayout(FlowLayout.LEFT));
 //            this.add(jl);
 //            this.add(jtf);
