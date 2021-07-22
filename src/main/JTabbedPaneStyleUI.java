@@ -1,14 +1,21 @@
 package main;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @author lp
@@ -17,6 +24,12 @@ import java.io.File;
  **/
 public class JTabbedPaneStyleUI {
     private JFrame frame;
+    private String currentTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+    private String fileNameDelimiter = "-";
+    private String fileNameSuffix = ".xlsx";
+
+    String initPidTextValue = fileNameDelimiter.concat(currentTime).concat(fileNameSuffix);
+    int index = 1;
 
     public void createGUI() {
 
@@ -55,7 +68,7 @@ public class JTabbedPaneStyleUI {
         JPanel generateMacPanel = new JPanel();
         generateMacPanel.setLayout(new GridBagLayout());
 
-        // mac地址栏
+        // 1. mac地址栏
         JPanel macStartPanel = new JPanelFactory("mac地址", null).createPanel();
         JTextField macStartText = (JTextField) macStartPanel.getComponent(2);
         macStartText.setText("mac起始地址");
@@ -80,70 +93,6 @@ public class JTabbedPaneStyleUI {
         macPanel.add(macDelimiterLabel);
         macPanel.add(macEndPanel);
         macPanel.add(showEndMacLengthLabel);
-
-        GridBagConstraints c00 = new GridBagConstraints();
-        c00.gridx = 0;
-        c00.gridy = 0;
-        c00.weightx = 1;
-        c00.weighty = 0;
-        c00.fill = GridBagConstraints.NONE;
-        c00.insets.top = 10;
-        c00.insets.left = 5;
-        c00.anchor = GridBagConstraints.WEST;
-        generateMacPanel.add(macPanel, c00);
-
-        // pid栏
-        GridBagConstraints c01 = new GridBagConstraints();
-        c01.gridx = 0;
-        c01.gridy = 1;
-        c01.weightx = 1;
-        c01.weighty = 1;
-        c01.fill = GridBagConstraints.BOTH;
-        c01.insets.top = 10;
-        c01.insets.left = 5;
-        c01.anchor = GridBagConstraints.WEST;
-        // TODO
-        generateMacPanel.add(macPanel, c01);
-
-
-        // 添加pid按钮栏
-        GridBagConstraints c02 = new GridBagConstraints();
-        c02.gridx = 0;
-        c02.gridy = 1;
-        c02.weightx = 1;
-        c02.weighty = 0;
-        c02.fill = GridBagConstraints.NONE;
-        c02.insets.top = 10;
-        c02.insets.left = 2;
-        c02.anchor = GridBagConstraints.WEST;
-
-
-//        JTextField macStartText = new JTextField(20);
-//        macStartText.setText("mac起始地址");
-//        macStartText.setForeground(Color.GRAY);
-//        macStartText.setBounds(80, 20, 160, 25);
-//        generateMacPanel.add(macStartText);
-
-        GridBagConstraints c03 = new GridBagConstraints();
-        c03.gridx = 0;
-        c03.gridy = 1;
-        c03.weightx = 1;
-        c03.weighty = 0;
-        c03.fill = GridBagConstraints.NONE;
-        c03.insets.top = 10;
-        c03.insets.left = 2;
-        c03.anchor = GridBagConstraints.WEST;
-
-
-//        JTextField macEndText = new JTextField(20);
-//        macEndText.setText("mac结束地址");
-//        macEndText.setForeground(Color.GRAY);
-//        macEndText.setBounds(300, 20, 160, 25);
-//        generateMacPanel.add(macEndText);
-
-//        JLabel showEndMacLengthLabel = new JLabel();
-//        showEndMacLengthLabel.setBounds(460, 20, 20, 20);
-//        generateMacPanel.add(showEndMacLengthLabel);
 
         macStartText.addFocusListener(new FocusListener() {
             @Override
@@ -187,73 +136,129 @@ public class JTabbedPaneStyleUI {
                 }
             }
         });
-/*
-        // 动态添加品类行
-        JPanel pidContentPanel = new JPanel();
-        pidContentPanel.setLayout(new BoxLayout(pidContentPanel, BoxLayout.Y_AXIS));
-//        pidContentPanel.setSize(800, 25);
-        pidContentPanel.setBounds(10, 50, 800, 400);
 
-        Container pidContainer = new Container();
-        pidContainer.setLayout(new BoxLayout(pidContainer, BoxLayout.X_AXIS));
-        pidContainer.setSize(new Dimension(800, 25));
+        GridBagConstraints c00 = new GridBagConstraints();
+        c00.gridx = 0;
+        c00.gridy = 0;
+        c00.weightx = 1;
+        c00.weighty = 0;
+        c00.fill = GridBagConstraints.NONE;
+        c00.insets.top = 10;
+        c00.insets.left = 5;
+        c00.anchor = GridBagConstraints.WEST;
+        generateMacPanel.add(macPanel, c00);
 
-        JScrollPane pidContentScrollPane = new JScrollPane(pidContainer, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-//        scrollPane.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "日志", TitledBorder.CENTER, TitledBorder.TOP));
-        pidContentScrollPane.setBounds(10, 50, 800, 400);
+        // 2. pid栏
+        GridBagConstraints c01 = new GridBagConstraints();
+        c01.gridx = 0;
+        c01.gridy = 1;
+        c01.weightx = 1;
+        c01.weighty = 1;
+        c01.fill = GridBagConstraints.BOTH;
+        c01.insets.top = 10;
+        c01.insets.left = 5;
+        c01.anchor = GridBagConstraints.WEST;
 
-        JLabel prodIdLabel = new JLabel("pid:");
-//        prodIdLabel.setBounds(10, 50, 50, 25);
-        pidContainer.add(prodIdLabel);
+        JPanel pidListPanel = new JPanel();
+        pidListPanel.setLayout(new BoxLayout(pidListPanel, BoxLayout.Y_AXIS));
+        // init first pidContent
+        JPanel pidContentPanel = getPidContentPanel(index);
+        pidListPanel.add(pidContentPanel);
+        JScrollPane pidListScrollPane = new JScrollPane(pidListPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        generateMacPanel.add(pidListScrollPane, c01);
 
-        JTextField prodIdText = new JTextField(20);
-//        prodIdText.setBounds(60, 50, 160, 25);
-        pidContainer.add(prodIdText);
+        // 删除一行 TODO
+        JButton delPidContentPanelButton = (JButton) pidContentPanel.getComponent(5);
+        delPidContent(delPidContentPanelButton, pidListPanel);
 
-        JLabel pidNumLabel = new JLabel("个数:");
-//        pidNumLabel.setBounds(220, 50, 50, 25);
-        pidContainer.add(pidNumLabel);
+        // 监听文本框内容显示到文件名后缀
+        JPanel pidPanel = (JPanel) pidContentPanel.getComponent(1);
+        JTextField pidText = (JTextField) pidPanel.getComponent(2);
+        JLabel fileNameSuffixLabel = (JLabel) pidContentPanel.getComponent(4);
+        pidText.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                Document document = e.getDocument();
+                try {
+                    String text = document.getText(0, document.getLength()).trim();
+                    if (text.length() > 0) {
+                        fileNameSuffixLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
+                    } else {
+                        fileNameSuffixLabel.setText(initPidTextValue);
+                    }
+                } catch (BadLocationException badLocationException) {
+                    badLocationException.printStackTrace();
+                }
+            }
 
-        JTextField pidNumText = new JTextField(20);
-        pidNumText.setSize(new Dimension(50, 25));
-//        pidNumText.setBounds(270, 50, 50, 25);
-        pidContainer.add(pidNumText);
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                Document document = e.getDocument();
+                try {
+                    String text = document.getText(0, document.getLength()).trim();
+                    if (text.length() > 0) {
+                        fileNameSuffixLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
+                    } else {
+                        fileNameSuffixLabel.setText(initPidTextValue);
+                    }
+                } catch (BadLocationException badLocationException) {
+                    badLocationException.printStackTrace();
+                }
+            }
 
-        JLabel exportFileNameLabel = new JLabel("导出文件名:");
-//        exportFileNameLabel.setBounds(320, 50, 80, 25);
-        pidContainer.add(exportFileNameLabel);
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                Document document = e.getDocument();
+                try {
+                    String text = document.getText(0, document.getLength()).trim();
+                    if (text.length() > 0) {
+                        fileNameSuffixLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
+                    } else {
+                        fileNameSuffixLabel.setText(initPidTextValue);
+                    }
+                } catch (BadLocationException badLocationException) {
+                    badLocationException.printStackTrace();
+                }
+            }
+        });
 
-        JTextField exportFileNameText = new JTextField(20);
-//        exportFileNameText.setBounds(400, 50, 120, 25);
-        pidContainer.add(exportFileNameText);
+        // 3. 添加pid按钮栏
+        GridBagConstraints c02 = new GridBagConstraints();
+        c02.gridx = 0;
+        c02.gridy = 2;
+        c02.weightx = 1;
+        c02.weighty = 0;
+        c02.fill = GridBagConstraints.NONE;
+        c02.insets.top = 10;
+        c02.insets.left = 5;
+        c02.anchor = GridBagConstraints.WEST;
 
-        JLabel exportFileNameSuffixLabel = new JLabel();
-        exportFileNameSuffixLabel.setText("-" + prodIdText.getText().trim() + "-" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".xlsx");
-//        exportFileNameSuffixLabel.setBounds(520, 50, 200, 25);
-        pidContainer.add(exportFileNameSuffixLabel);
+        JButton addPidContentPanelButton = new JButton("添加品类");
+        generateMacPanel.add(addPidContentPanelButton, c02);
 
-        // 删除pid容器
-        JButton delPidContainerButton = new JButton("删除");
-//        delPidContainerButton.setBounds(720, 50, 80, 25);
-        pidContainer.add(delPidContainerButton);
+        addPidContentPanelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                pidListPanel.add(getPidContentPanel(++index));
+                refreshPane(pidListPanel, pidListScrollPane);
+                System.out.println("index = " + index);
+//                new CreateMacConfirmActionListener(frame, null, macStartText.getText().trim(), macEndText.getText().trim(), prodIdText.getText().trim()).actionPerformed(e);
+            }
+        });
 
-        pidContentPanel.add(pidContentScrollPane);
-        generateMacPanel.add(pidContentPanel);*/
+        // 4. 确定按钮栏
+        GridBagConstraints c03 = new GridBagConstraints();
+        c03.gridx = 0;
+        c03.gridy = 3;
+        c03.weightx = 1;
+        c03.weighty = 0;
+        c03.fill = GridBagConstraints.NONE;
+        c03.insets.top = 10;
+        c03.insets.left = 5;
+        c03.anchor = GridBagConstraints.WEST;
 
-
-//        // 添加品类按钮
-//        JButton addPidContentPanelButton = new JButton("添加品类");
-//        addPidContentPanelButton.setBounds(10, 70, 120, 25);
-//        generateMacPanel.add(addPidContentPanelButton);
-
-
-//        frame.add(PidFrame.createPidContainer());
-
-
-        // 确定按钮
         JButton confirmButton = new JButton("生成mac地址");
-        confirmButton.setBounds(10, 500, 120, 25);
-        generateMacPanel.add(confirmButton);
+        generateMacPanel.add(confirmButton, c03);
 
         confirmButton.addActionListener(new ActionListener() {
             @Override
@@ -262,8 +267,90 @@ public class JTabbedPaneStyleUI {
             }
         });
 
+        // 5. 提示栏
+        GridBagConstraints c04 = new GridBagConstraints();
+        c04.gridx = 0;
+        c04.gridy = 4;
+        c04.weightx = 1;
+        c04.weighty = 0;
+        c04.fill = GridBagConstraints.HORIZONTAL;
+        c04.insets.top = 20;
+        c04.insets.left = 5;
+        c04.insets.bottom = 20;
+        c04.anchor = GridBagConstraints.WEST;
+
+        JLabel remindLabel = new JLabel();
+        remindLabel.setText("<html><body>提示：<br> 1. mac地址要求：非空，16进制字符，长度小于32位； <br>2. pid非空，只支持数字和字母，区分大小写，最长64位； <br> 3. pid会转换为16进制； <br> 4. 为保障工具可用性，限制mac一次最多生成65536条（即最大：***0000 - ***ffff）。<body></html>");
+        remindLabel.setForeground(Color.GRAY);
+        generateMacPanel.add(remindLabel, c04);
+
         return generateMacPanel;
     }
+
+    private JPanel getPidContentPanel (int index) {
+        // 2.1 pid内容行
+        JPanel pidContentPanel = new JPanel();
+        pidContentPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+//        pidContentPanel.setSize(new Dimension(170, 30));
+
+        // 0
+        JLabel indexLabel = new JLabel(index + ". ");
+
+        // 1
+        JPanel pidPanel = new JPanelFactory("pid", null).createPanel();
+
+        // 2
+        JPanel numPanel = new JPanelFactory("个数", null).createPanel();
+        JTextField numText = (JTextField) numPanel.getComponent(2);
+
+        // 3
+        JPanel fileNamePanel = new JPanelFactory("文件名", null).createPanel();
+        JTextField fileNameText = (JTextField) fileNamePanel.getComponent(2);
+
+        // 4
+        JLabel fileNameSuffixLabel = new JLabel();
+        fileNameSuffixLabel.setText(initPidTextValue);
+        fileNameSuffixLabel.setForeground(Color.GRAY);
+
+        // 5
+        JButton delPidContentPanelButton = new JButton("删除");
+
+        pidContentPanel.add(indexLabel);
+        pidContentPanel.add(pidPanel);
+        pidContentPanel.add(numPanel);
+        pidContentPanel.add(fileNamePanel);
+        pidContentPanel.add(fileNameSuffixLabel);
+        pidContentPanel.add(delPidContentPanelButton);
+
+        return pidContentPanel;
+    }
+
+    // 刷新界面
+    private void refreshPane(JPanel jp, JScrollPane jsp) {
+        // 添加或删除组件后,更新窗口
+        SwingUtilities.updateComponentTreeUI(jp);
+        // 得到垂直滚动条,位置设置到最下面
+//        JScrollBar jsb = jsp.getVerticalScrollBar();
+//        jsb.setValue(jsb.getMaximum());
+    }
+
+    // 删除一行事件
+    private void delPidContent(JButton delPidContentPanelButton, JPanel pidContentPanel) {
+
+        delPidContentPanelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                JOptionPane.showMessageDialog(frame, "del pid line, pid = "+ pidText.getText(), "Info", JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+
+        refreshPane(pidContentPanel, null);
+    }
+
+    private void pidTextListener() {
+
+    }
+
 
 
     // 选项卡2: 生成四元组txt
@@ -421,6 +508,8 @@ public class JTabbedPaneStyleUI {
                 jl = new JLabel();
             }
             jtf = new JTextField(20);
+            jtf.setMaximumSize(new Dimension(160, 25));
+            jtf.setMinimumSize(new Dimension(160, 25));
 //            this.setLayout(new FlowLayout(FlowLayout.LEFT));
 //            this.add(jl);
 //            this.add(jtf);
@@ -448,157 +537,4 @@ public class JTabbedPaneStyleUI {
         }
     }
 
-
-    JPanel jpc;//存放组件的面板
-    JScrollPane jsp;//滚动面板
-    JButton jbAdd, jbRemove, jbReset;// 增加,删除按钮
-    int index = 1;//开始的字符
-
-    public Container createPidContainer() {
-        jpc = new JPanel();
-        // 盒子布局.从上到下
-        jpc.setLayout(new BoxLayout(jpc, BoxLayout.Y_AXIS));
-        // 滚动面板
-        jsp = new JScrollPane(jpc, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        Container c = new Container();
-        c.add(jsp);
-
-        jbAdd = new JButton("增加");
-        jbAdd.addActionListener(new PidJBListener());
-        jbRemove = new JButton("删除");
-        jbRemove.addActionListener(new PidJBListener());
-        jbReset = new JButton("重置");
-        jbReset.addActionListener(new PidJBListener());
-
-        return c;
-    }
-
-    class PidJBListener implements ActionListener {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            JButton jb = (JButton) e.getSource();
-            if (jb == jbAdd) {//当点击添加按钮时
-                jpc.add(new MyJPanel(index));//添加1个自己定义的面板组件
-                index++;//自加1
-                myUpdateUI();//刷新界面
-            } else if (jb == jbRemove) {//当点击删除按钮时
-                if (jpc.getComponentCount() > 0) { // 得到jpc里的MyJPanel的组件数量
-                    jpc.remove(jpc.getComponentCount() - 1);//删除末尾的一个组件 ,
-                    index -= 1;
-                    myUpdateUI();
-                }
-            } else if (jb == jbReset) {
-                for (int i = 0; i < jpc.getComponentCount(); i++) {
-                    MyJPanel mjp = (MyJPanel) jpc.getComponent(i);
-                    //也就是说取值,可以根据文本框所在的位置来取
-                    System.out.println("第" + (i + 1) + "个文本框的值是" + mjp.getJTFValue());
-                    mjp.setJTFValue("");//清空,重置
-                    System.out.println("第" + (i + 1) + "个文本框的值已清空重置");
-                }
-            }
-        }
-
-        //刷新界面函数
-        private void myUpdateUI() {
-            SwingUtilities.updateComponentTreeUI(jsp);//添加或删除组件后,更新窗口
-            JScrollBar jsb = jsp.getVerticalScrollBar();//得到垂直滚动条
-            jsb.setValue(jsb.getMaximum());//把滚动条位置设置到最下面
-        }
-    }
-
-    //本类继承自JFrame 实现了 ActionListener接口
-    static class PidFrame extends JFrame implements ActionListener {
-        JPanel jpc;//存放组件的面板
-        JScrollPane jsp;//滚动面板
-        JButton jbAdd, jbRemove, jbReset;// 增加,删除按钮
-        int index = 1;//开始的字符
-
-        //构造函数
-        public PidFrame() {
-            jpc = new JPanel();
-            jpc.setLayout(new BoxLayout(jpc, BoxLayout.Y_AXIS));//盒子布局.从上到下
-            jsp = new JScrollPane(jpc, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-            add(jsp);
-
-            jbAdd = new JButton("增加");
-            jbAdd.addActionListener(this);
-            jbRemove = new JButton("删除");
-            jbRemove.addActionListener(this);
-            jbReset = new JButton("重置");
-            jbReset.addActionListener(this);
-            JPanel jps = new JPanel();
-            jps.add(jbAdd);
-            jps.add(jbRemove);
-            jps.add(jbReset);
-            add(jps, BorderLayout.SOUTH);
-            setTitle("增删组件");
-            setDefaultCloseOperation(EXIT_ON_CLOSE);
-            setSize(300, 220);//大小
-            setLocationRelativeTo(null);//居中
-        }
-        //main函数
-//        public static void main(String[] args) {
-//            new DemoFrame1().setVisible(true);//初始化并可见
-//        }
-
-        public static JPanel createPidContainer() {
-            return new PidFrame().jpc;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            JButton jb = (JButton) e.getSource();
-            if (jb == jbAdd) {//当点击添加按钮时
-                jpc.add(new MyJPanel(index));//添加1个自己定义的面板组件
-                index++;//自加1
-                myUpdateUI();//刷新界面
-            } else if (jb == jbRemove) {//当点击删除按钮时
-                if (jpc.getComponentCount() > 0) { // 得到jpc里的MyJPanel的组件数量
-                    jpc.remove(jpc.getComponentCount() - 1);//删除末尾的一个组件 ,
-                    index -= 1;
-                    myUpdateUI();
-                }
-            } else if (jb == jbReset) {
-                for (int i = 0; i < jpc.getComponentCount(); i++) {
-                    MyJPanel mjp = (MyJPanel) jpc.getComponent(i);
-                    //也就是说取值,可以根据文本框所在的位置来取
-                    System.out.println("第" + (i + 1) + "个文本框的值是" + mjp.getJTFValue());
-                    mjp.setJTFValue("");//清空,重置
-                    System.out.println("第" + (i + 1) + "个文本框的值已清空重置");
-                }
-            }
-
-        }
-
-        //刷新界面函数
-        private void myUpdateUI() {
-            SwingUtilities.updateComponentTreeUI(this);//添加或删除组件后,更新窗口
-            JScrollBar jsb = jsp.getVerticalScrollBar();//得到垂直滚动条
-            jsb.setValue(jsb.getMaximum());//把滚动条位置设置到最下面
-        }
-
-    }
-
-    //自定义一个JPanle类
-    static class MyJPanel extends JPanel {
-        public JTextField jtf;
-
-        public MyJPanel(int index) {
-            JLabel jl = new JLabel("字符" + index);
-            jtf = new JTextField(15);
-            add(jl);
-            add(jtf);
-        }
-
-        //获取文本框的值
-        public String getJTFValue() {
-            return jtf.getText();
-        }
-
-        //设置文本框的值
-        public void setJTFValue(String value) {
-            jtf.setText(value);
-        }
-    }
 }
