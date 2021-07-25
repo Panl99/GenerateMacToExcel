@@ -1,7 +1,6 @@
 package main;
 
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -16,6 +15,8 @@ import java.awt.event.FocusListener;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author lp
@@ -29,14 +30,14 @@ public class JTabbedPaneStyleUI {
     private String fileNameSuffix = ".xlsx";
 
     String initPidTextValue = fileNameDelimiter.concat(currentTime).concat(fileNameSuffix);
-    int index = 1;
+    int initIndex = 1;
 
     public void createGUI() {
 
         frame = new JFrame();
         frame.setTitle("HiLink平台三元组自动生成工具_2.0");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setBounds(500, 300, 800, 600);
+        frame.setBounds(400, 100, 1200, 800);
         // 禁止窗口拉伸
 //        frame.setResizable(false);
 
@@ -63,7 +64,9 @@ public class JTabbedPaneStyleUI {
         frame.setVisible(true);
     }
 
-    // 选项卡1: 生成mac地址
+    /**
+     * 选项卡1: 生成mac地址
+     */
     private JPanel createMacPanel() {
         JPanel generateMacPanel = new JPanel();
         generateMacPanel.setLayout(new GridBagLayout());
@@ -162,65 +165,82 @@ public class JTabbedPaneStyleUI {
         JPanel pidListPanel = new JPanel();
         pidListPanel.setLayout(new BoxLayout(pidListPanel, BoxLayout.Y_AXIS));
         // init first pidContent
-        JPanel pidContentPanel = getPidContentPanel(index);
+        JPanel pidContentPanel = getPidContentPanel(initIndex);
         pidListPanel.add(pidContentPanel);
         JScrollPane pidListScrollPane = new JScrollPane(pidListPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         generateMacPanel.add(pidListScrollPane, c01);
 
-        // 删除一行 TODO
-        JButton delPidContentPanelButton = (JButton) pidContentPanel.getComponent(5);
-        delPidContent(delPidContentPanelButton, pidListPanel);
+        // 删除一行
+//        JButton delPidContentPanelButton = (JButton) pidContentPanel.getComponent(5);
+//        delPidContentPanelButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                Container buttonParent = delPidContentPanelButton.getParent().getParent();
+//                if (buttonParent.getComponentCount() < 2) {
+//                    JOptionPane.showMessageDialog(frame, "还是留一个吧", "Warning", JOptionPane.WARNING_MESSAGE);
+//                    return;
+//                }
+//                buttonParent.remove(0);
+//                for (int i = 0; i < buttonParent.getComponentCount(); i++) {
+//                    JLabel numLabel = (JLabel) ((JPanel) buttonParent.getComponent(i)).getComponent(0);
+//                    String numStr = numLabel.getText().substring(0, numLabel.getText().indexOf(". "));
+//                    numLabel.setText(Integer.parseInt(numStr) - 1 + ". ");
+//                }
+//                initIndex = buttonParent.getComponentCount();
+//                refreshPane(pidContentPanel, null);
+//            }
+//        });
 
-        // 监听文本框内容显示到文件名后缀
-        JPanel pidPanel = (JPanel) pidContentPanel.getComponent(1);
-        JTextField pidText = (JTextField) pidPanel.getComponent(2);
-        JLabel fileNameSuffixLabel = (JLabel) pidContentPanel.getComponent(4);
-        pidText.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                Document document = e.getDocument();
-                try {
-                    String text = document.getText(0, document.getLength()).trim();
-                    if (text.length() > 0) {
-                        fileNameSuffixLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
-                    } else {
-                        fileNameSuffixLabel.setText(initPidTextValue);
-                    }
-                } catch (BadLocationException badLocationException) {
-                    badLocationException.printStackTrace();
-                }
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                Document document = e.getDocument();
-                try {
-                    String text = document.getText(0, document.getLength()).trim();
-                    if (text.length() > 0) {
-                        fileNameSuffixLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
-                    } else {
-                        fileNameSuffixLabel.setText(initPidTextValue);
-                    }
-                } catch (BadLocationException badLocationException) {
-                    badLocationException.printStackTrace();
-                }
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                Document document = e.getDocument();
-                try {
-                    String text = document.getText(0, document.getLength()).trim();
-                    if (text.length() > 0) {
-                        fileNameSuffixLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
-                    } else {
-                        fileNameSuffixLabel.setText(initPidTextValue);
-                    }
-                } catch (BadLocationException badLocationException) {
-                    badLocationException.printStackTrace();
-                }
-            }
-        });
+//        // 监听文本框内容显示到文件名后缀
+//        JPanel pidPanel = (JPanel) pidContentPanel.getComponent(1);
+//        JTextField pidText = (JTextField) pidPanel.getComponent(2);
+//        JLabel fileNameSuffixLabel = (JLabel) pidContentPanel.getComponent(4);
+//        pidText.getDocument().addDocumentListener(new DocumentListener() {
+//            @Override
+//            public void insertUpdate(DocumentEvent e) {
+//                Document document = e.getDocument();
+//                try {
+//                    String text = document.getText(0, document.getLength()).trim();
+//                    if (text.length() > 0) {
+//                        fileNameSuffixLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
+//                    } else {
+//                        fileNameSuffixLabel.setText(initPidTextValue);
+//                    }
+//                } catch (BadLocationException badLocationException) {
+//                    badLocationException.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void removeUpdate(DocumentEvent e) {
+//                Document document = e.getDocument();
+//                try {
+//                    String text = document.getText(0, document.getLength()).trim();
+//                    if (text.length() > 0) {
+//                        fileNameSuffixLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
+//                    } else {
+//                        fileNameSuffixLabel.setText(initPidTextValue);
+//                    }
+//                } catch (BadLocationException badLocationException) {
+//                    badLocationException.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void changedUpdate(DocumentEvent e) {
+//                Document document = e.getDocument();
+//                try {
+//                    String text = document.getText(0, document.getLength()).trim();
+//                    if (text.length() > 0) {
+//                        fileNameSuffixLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
+//                    } else {
+//                        fileNameSuffixLabel.setText(initPidTextValue);
+//                    }
+//                } catch (BadLocationException badLocationException) {
+//                    badLocationException.printStackTrace();
+//                }
+//            }
+//        });
 
         // 3. 添加pid按钮栏
         GridBagConstraints c02 = new GridBagConstraints();
@@ -239,10 +259,11 @@ public class JTabbedPaneStyleUI {
         addPidContentPanelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                pidListPanel.add(getPidContentPanel(++index));
+                pidListPanel.add(getPidContentPanel(++initIndex));
                 refreshPane(pidListPanel, pidListScrollPane);
-                System.out.println("index = " + index);
-//                new CreateMacConfirmActionListener(frame, null, macStartText.getText().trim(), macEndText.getText().trim(), prodIdText.getText().trim()).actionPerformed(e);
+                // 得到垂直滚动条,位置设置到最下面
+                JScrollBar jsb = pidListScrollPane.getVerticalScrollBar();
+                jsb.setValue(jsb.getMaximum());
             }
         });
 
@@ -257,13 +278,13 @@ public class JTabbedPaneStyleUI {
         c03.insets.left = 5;
         c03.anchor = GridBagConstraints.WEST;
 
-        JButton confirmButton = new JButton("生成mac地址");
+        JButton confirmButton = new JButton("导出mac地址Excel");
         generateMacPanel.add(confirmButton, c03);
 
         confirmButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-//                new CreateMacConfirmActionListener(frame, null, macStartText.getText().trim(), macEndText.getText().trim(), prodIdText.getText().trim()).actionPerformed(e);
+                new CreateMacConfirmActionListener(frame, macStartText.getText().trim(), macEndText.getText().trim(), pidListPanel).actionPerformed(e);
             }
         });
 
@@ -287,7 +308,9 @@ public class JTabbedPaneStyleUI {
         return generateMacPanel;
     }
 
-    private JPanel getPidContentPanel (int index) {
+    Map<String, JComponent> componentMap = new HashMap<>();
+
+    private JPanel getPidContentPanel(int index) {
         // 2.1 pid内容行
         JPanel pidContentPanel = new JPanel();
         pidContentPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -297,63 +320,125 @@ public class JTabbedPaneStyleUI {
         JLabel indexLabel = new JLabel(index + ". ");
 
         // 1
-        JPanel pidPanel = new JPanelFactory("pid", null).createPanel();
+        String pidPanelKey = "pidPanel" + index;
+        componentMap.put(pidPanelKey, new JPanelFactory("pid", null).createPanel());
+        JTextField pidText = (JTextField) componentMap.get(pidPanelKey).getComponent(2);
 
         // 2
-        JPanel numPanel = new JPanelFactory("个数", null).createPanel();
-        JTextField numText = (JTextField) numPanel.getComponent(2);
+        String numPanelKey = "numPanel" + index;
+        componentMap.put(numPanelKey, new JPanelFactory("个数", null).createPanel());
+        JTextField numText = (JTextField) componentMap.get(numPanelKey).getComponent(2);
 
         // 3
-        JPanel fileNamePanel = new JPanelFactory("文件名", null).createPanel();
-        JTextField fileNameText = (JTextField) fileNamePanel.getComponent(2);
+        String fileNamePanelKey = "fileNamePanel" + index;
+        componentMap.put(fileNamePanelKey, new JPanelFactory("文件名", null).createPanel());
+        JTextField fileNameText = (JTextField) componentMap.get(fileNamePanelKey).getComponent(2);
 
         // 4
         JLabel fileNameSuffixLabel = new JLabel();
         fileNameSuffixLabel.setText(initPidTextValue);
         fileNameSuffixLabel.setForeground(Color.GRAY);
+        String fileNameSuffixLabelKey = "fileNameSuffixLabel" + index;
+        componentMap.put(fileNameSuffixLabelKey, fileNameSuffixLabel);
+        JLabel currentLabel = (JLabel) componentMap.get(fileNameSuffixLabelKey);
+        // 监听文本框内容显示到文件名后缀
+        pidText.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                Document document = e.getDocument();
+                try {
+                    String text = document.getText(0, document.getLength()).trim();
+                    if (text.length() > 0) {
+                        currentLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
+                    } else {
+                        currentLabel.setText(initPidTextValue);
+                    }
+                } catch (BadLocationException badLocationException) {
+                    badLocationException.printStackTrace();
+                }
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                Document document = e.getDocument();
+                try {
+                    String text = document.getText(0, document.getLength()).trim();
+                    if (text.length() > 0) {
+                        currentLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
+                    } else {
+                        currentLabel.setText(initPidTextValue);
+                    }
+                } catch (BadLocationException badLocationException) {
+                    badLocationException.printStackTrace();
+                }
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                Document document = e.getDocument();
+                try {
+                    String text = document.getText(0, document.getLength()).trim();
+                    if (text.length() > 0) {
+                        currentLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
+                    } else {
+                        currentLabel.setText(initPidTextValue);
+                    }
+                } catch (BadLocationException badLocationException) {
+                    badLocationException.printStackTrace();
+                }
+            }
+        });
 
         // 5
-        JButton delPidContentPanelButton = new JButton("删除");
+        String btnNameKey = "delPidContentPanelButton" + index;
+        componentMap.put(btnNameKey, new JButton("删除"));
+        // 删除一行
+        ((JButton) componentMap.get(btnNameKey)).addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Container listContainer = componentMap.get(btnNameKey).getParent().getParent();
+                if (listContainer == null || listContainer.getComponentCount() < 1) {
+//                    JOptionPane.showMessageDialog(frame, "再删就秃了", "Warning", JOptionPane.WARNING_MESSAGE);
+                    refreshPane(listContainer, null);
+                    return;
+                }
+                JPanel delPidContentPanelButtonParent = (JPanel) componentMap.get(btnNameKey).getParent();
+                JLabel currentComponentNumLabel = (JLabel) delPidContentPanelButtonParent.getComponent(0);
+                int currentComponentNum = Integer.parseInt(currentComponentNumLabel.getText().substring(0, currentComponentNumLabel.getText().indexOf(". ")));
+                listContainer.remove(delPidContentPanelButtonParent);
+                for (int i = --currentComponentNum; i < listContainer.getComponentCount(); i++) {
+                    JLabel numLabel = (JLabel) ((JPanel) listContainer.getComponent(i)).getComponent(0);
+                    String numStr = numLabel.getText().substring(0, numLabel.getText().indexOf(". "));
+                    numLabel.setText(Integer.parseInt(numStr) - 1 + ". ");
+                }
+                initIndex = listContainer.getComponentCount();
+                refreshPane(listContainer, null);
+            }
+        });
 
         pidContentPanel.add(indexLabel);
-        pidContentPanel.add(pidPanel);
-        pidContentPanel.add(numPanel);
-        pidContentPanel.add(fileNamePanel);
-        pidContentPanel.add(fileNameSuffixLabel);
-        pidContentPanel.add(delPidContentPanelButton);
+        pidContentPanel.add(componentMap.get(pidPanelKey));
+        pidContentPanel.add(componentMap.get(numPanelKey));
+        pidContentPanel.add(componentMap.get(fileNamePanelKey));
+        pidContentPanel.add(currentLabel);
+        pidContentPanel.add(componentMap.get(btnNameKey));
 
         return pidContentPanel;
     }
 
     // 刷新界面
-    private void refreshPane(JPanel jp, JScrollPane jsp) {
+    private void refreshPane(Container container, JScrollPane jsp) {
         // 添加或删除组件后,更新窗口
-        SwingUtilities.updateComponentTreeUI(jp);
+        SwingUtilities.updateComponentTreeUI(container);
         // 得到垂直滚动条,位置设置到最下面
 //        JScrollBar jsb = jsp.getVerticalScrollBar();
 //        jsb.setValue(jsb.getMaximum());
     }
 
-    // 删除一行事件
-    private void delPidContent(JButton delPidContentPanelButton, JPanel pidContentPanel) {
 
-        delPidContentPanelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-//                JOptionPane.showMessageDialog(frame, "del pid line, pid = "+ pidText.getText(), "Info", JOptionPane.INFORMATION_MESSAGE);
-            }
-        });
-
-        refreshPane(pidContentPanel, null);
-    }
-
-    private void pidTextListener() {
-
-    }
-
-
-
-    // 选项卡2: 生成四元组txt
+    /**
+     * 选项卡2: 生成四元组txt
+     */
     private JPanel createTxtPanel() {
         JPanel generateTxtPanel = new JPanel();
         generateTxtPanel.setLayout(new GridBagLayout());
@@ -440,7 +525,7 @@ public class JTabbedPaneStyleUI {
         c5.insets.left = 5;
         c5.anchor = GridBagConstraints.WEST;
         // 确定按钮
-        JButton telinkConfirmButton = new JButton("生成telink四元组");
+        JButton telinkConfirmButton = new JButton("导出telink四元组txt");
         generateTxtPanel.add(telinkConfirmButton, c5);
 
         telinkConfirmButton.addActionListener(new ActionListener() {
@@ -462,7 +547,7 @@ public class JTabbedPaneStyleUI {
         c6.insets.left = 5;
         c6.anchor = GridBagConstraints.WEST;
         // 确定按钮
-        JButton realtekConfirmButton = new JButton("生成realtek三元组");
+        JButton realtekConfirmButton = new JButton("导出realtek三元组txt");
         //generateTxtPanel.add(Box.createVerticalStrut(20));
         generateTxtPanel.add(realtekConfirmButton, c6);
 

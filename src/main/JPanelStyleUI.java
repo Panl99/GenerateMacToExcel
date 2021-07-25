@@ -116,7 +116,7 @@ public class JPanelStyleUI {
         confirmButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new CreateMacConfirmActionListener(frame, textArea, macStartText.getText().trim(), macEndText.getText().trim(), prodIdText.getText().trim()).actionPerformed(e);
+//                new CreateMacConfirmActionListener(frame, textArea, macStartText.getText().trim(), macEndText.getText().trim(), prodIdText.getText().trim()).actionPerformed(e);
             }
         });
 
