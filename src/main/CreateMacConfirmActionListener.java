@@ -34,11 +34,8 @@ public class CreateMacConfirmActionListener {
     private JPanel pidListPanel;
 
     private final int defaultHexStrLength = 12;
-    private final int maxHexStrLength = 16;
+    private final int maxHexStrLength = 32;
     private final int maxTextLength = 64;
-
-    private String startMacHex;
-    private String endMacHex;
 
     private static final char[] HEX_CHAR_LOWER = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
     private static final char[] HEX_CHAR_UPPER = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
@@ -48,8 +45,6 @@ public class CreateMacConfirmActionListener {
         this.startMac = startMac;
         this.endMac = endMac;
         this.pidListPanel = pidListPanel;
-        this.startMacHex = ConvertUtil.ascii2hex(startMac);
-        this.endMacHex = ConvertUtil.ascii2hex(endMac);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -57,23 +52,27 @@ public class CreateMacConfirmActionListener {
             return;
         }
 
-        // 放前边，需要计算个数供校验
-        List<String> macList = generateMacList();
-
-        if (!verifyText(macList.size())) {
+        if (!verifyText()) {
             return;
         }
 
-        if (macList.size() == 0) {
-            JOptionPane.showMessageDialog(frame, "生成mac列表错误!", "Error", JOptionPane.ERROR_MESSAGE);
+        // 放前边，需要计算个数供校验
+        List<List<String>> macList = generateMacList();
+        int macListSize = 0;
+        for (List list : macList) {
+            macListSize += list.size();
+        }
+
+        if (!verifyNumSum(macListSize)) {
+            return;
+        }
+
+        if (macListSize == 0) {
+            JOptionPane.showMessageDialog(frame, "生成mac列表错误! 空列表！", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         writeToExcel(macList);
-
-        //textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
-        //textArea.append("【生成三元组申请表路径】" + file.getAbsolutePath() + "\n");
-        //textArea.append("prodId=" + prodId + "，macList=" + macList + "，共计：" + macList.size() + "\n");
     }
 
     /**
@@ -81,8 +80,9 @@ public class CreateMacConfirmActionListener {
      *
      * @return
      */
-    private boolean verifyText(int macListSize) {
-        int numSum = 0;
+    private boolean verifyText() {
+        List<String> pidList = new ArrayList<>(pidListPanel.getComponentCount());
+
         for (int i = 0; i < pidListPanel.getComponentCount(); i++) {
             // 校验pid内容
             JTextField pidText = (JTextField) ((JPanel) ((JPanel) pidListPanel.getComponent(i)).getComponent(1)).getComponent(2);
@@ -99,6 +99,11 @@ public class CreateMacConfirmActionListener {
                 JOptionPane.showMessageDialog(frame, "pid最长支持64位", "Error", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
+            if (pidList.contains(pid.trim())) {
+                JOptionPane.showMessageDialog(frame, "pid不能相同，pid = " + pid.trim(), "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+            pidList.add(pid.trim());
 
             // 校验个数内容
             JTextField numText = (JTextField) ((JPanel) ((JPanel) pidListPanel.getComponent(i)).getComponent(2)).getComponent(2);
@@ -111,14 +116,8 @@ public class CreateMacConfirmActionListener {
                 JOptionPane.showMessageDialog(frame, "个数只支持数字", "Error", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
-            if (Integer.parseInt(num.trim()) > macListSize) {
-                JOptionPane.showMessageDialog(frame, "个数超过了mac地址总数，行号：" + ++i + "|当前个数：" + num.trim() + "|mac总数：" + macListSize, "Error", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
-
-            numSum += Integer.parseInt(num.trim());
-            if (numSum > macListSize) {
-                JOptionPane.showMessageDialog(frame, "个数总和超过了mac地址总数，个数总和：" + numSum + "|mac总数：" + macListSize, "Error", JOptionPane.ERROR_MESSAGE);
+            if (Integer.parseInt(num.trim()) < 1) {
+                JOptionPane.showMessageDialog(frame, "个数不能小于1，行号：" + ++i + " | 当前个数：" + num.trim(), "Error", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
 
@@ -130,10 +129,29 @@ public class CreateMacConfirmActionListener {
                 return false;
             }
             if (fileName.trim().length() > 128) {
-                JOptionPane.showMessageDialog(frame, "文件名最长支持128位，行号：" + ++i + "|当前长度：" + fileName.trim().length(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "文件名最长支持128位，行号：" + ++i + " | 当前长度：" + fileName.trim().length(), "Error", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
 
+        }
+        return true;
+    }
+
+    private boolean verifyNumSum(int macListSize) {
+        int numSum = 0;
+        for (int i = 0; i < pidListPanel.getComponentCount(); i++) {
+            // 校验个数内容
+            JTextField numText = (JTextField) ((JPanel) ((JPanel) pidListPanel.getComponent(i)).getComponent(2)).getComponent(2);
+            int num = "".equals(numText.getText().trim()) ? 0 : Integer.parseInt(numText.getText().trim());
+            if (num > macListSize) {
+                JOptionPane.showMessageDialog(frame, "个数超过了mac地址总数，行号：" + ++i + " | 当前个数：" + num + " | mac总数：" + macListSize, "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+            numSum += num;
+        }
+        if (numSum > macListSize) {
+            JOptionPane.showMessageDialog(frame, "个数总和超过了mac地址总数，个数总和：" + numSum + " | mac总数：" + macListSize, "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
         }
         return true;
     }
@@ -143,7 +161,6 @@ public class CreateMacConfirmActionListener {
      *
      * @return
      */
-    // TODO mac输入是否就是十六进制，如果是，需要改回原来的校验，当前按照ascii来校验的
     private boolean verifyMac() {
         if (startMac == null || startMac.trim().length() == 0 || endMac == null || endMac.trim().length() == 0) {
             JOptionPane.showMessageDialog(frame, "mac地址输入为空", "Error", JOptionPane.ERROR_MESSAGE);
@@ -161,13 +178,13 @@ public class CreateMacConfirmActionListener {
 //        }
 
         if (startMac.trim().length() > maxHexStrLength) {
-            JOptionPane.showMessageDialog(frame, "mac地址字符最大16位", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(frame, "mac地址最大32位", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
-        String hexMatcher = "[0-9a-zA-Z]{" + startMac.trim().length() + "}";
+        String hexMatcher = "[0-9a-fA-F]{" + startMac.trim().length() + "}";
         if (!startMac.trim().matches(hexMatcher) || !endMac.trim().matches(hexMatcher)) {
-            JOptionPane.showMessageDialog(frame, "mac地址只支持数字和字母格式", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(frame, "请检查mac地址是否为十六进制格式", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -180,21 +197,21 @@ public class CreateMacConfirmActionListener {
     }
 
     public boolean checkMacHex() {
-        for (int i = 0; i < startMacHex.length(); ++i) {
-            char c = startMacHex.charAt(i);
-            char c2 = endMacHex.charAt(i);
+        for (int i = 0; i < startMac.length(); ++i) {
+            char c = startMac.charAt(i);
+            char c2 = endMac.charAt(i);
 
             int result = compareCharSize(c2, c);
             if (result > 0) {
                 // 判断索引i不在后四位
-                if (startMacHex.length() > 4 && (startMacHex.length() - 1 - i) >= 4) {
-                    JOptionPane.showMessageDialog(frame, "不支持生成mac条数大于65536条！[index=" + i + "，mac地址16进制（" + c + "|" + c2 + "）]", "Error", JOptionPane.ERROR_MESSAGE);
+                if (startMac.length() > 4 && (startMac.length() - 1 - i) >= 4) {
+                    JOptionPane.showMessageDialog(frame, "不支持生成mac条数大于65536条！[index=" + i + "，字符（" + c + " | " + c2 + "）]", "Error", JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
 
                 break;
             } else if (result < 0) {
-                JOptionPane.showMessageDialog(frame, "mac结束地址不能小于起始地址[index=" + i + "，mac地址16进制（" + c + "|" + c2 + "）]", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "mac结束地址不能小于起始地址[index=" + i + "，字符（" + c + " | " + c2 + "）]", "Error", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
         }
@@ -204,24 +221,31 @@ public class CreateMacConfirmActionListener {
     /**
      * 生成mac地址列表
      */
-    private List<String> generateMacList() {
-
-        List<String> macList = new ArrayList<>();
-        String currentMac = startMacHex.toLowerCase();
-        macList.add(currentMac);
-
-        while (true) {
-            if (endMacHex.toLowerCase().equals(currentMac)) {
+    private List<List<String>> generateMacList() {
+        List<List<String>> lists = new ArrayList<>(pidListPanel.getComponentCount());
+        String currentMac = startMac.toLowerCase();
+        for (int i = 0; i < pidListPanel.getComponentCount(); i++) {
+            JTextField numText = (JTextField) ((JPanel) ((JPanel) pidListPanel.getComponent(i)).getComponent(2)).getComponent(2);
+            int num = Integer.parseInt(numText.getText());
+            List<String> currentMacList = new ArrayList<>(num);
+            currentMacList.add(currentMac);
+            for (int j = 1; j < num; j++) {
+                if (endMac.toLowerCase().equals(currentMac)) {
+                    break;
+                }
+                currentMac = hexIncreaseOperator(currentMac, 1);
+                if (currentMac == null || currentMac.trim().length() == 0) {
+                    return null;
+                }
+                currentMacList.add(currentMac);
+            }
+            lists.add(currentMacList);
+            if (endMac.toLowerCase().equals(currentMac)) {
                 break;
             }
             currentMac = hexIncreaseOperator(currentMac, 1);
-            if (currentMac == null || currentMac.trim().length() == 0) {
-                return null;
-            }
-
-            macList.add(currentMac);
         }
-        return macList;
+        return lists;
     }
 
 
@@ -232,25 +256,25 @@ public class CreateMacConfirmActionListener {
      */
     private static File defaultFilePath;
 
-    private void writeToExcel(List macList) {
+    private void writeToExcel(List<List<String>> macList) {
         // 创建mac地址Excel默认路径桌面
         if (defaultFilePath == null) {
             defaultFilePath = new File(FileSystemView.getFileSystemView().getHomeDirectory().getAbsolutePath());
         }
 
-        for (int i = 0; i < pidListPanel.getComponentCount(); i++) {
-            JTextField fileNameText = (JTextField) ((JPanel) ((JPanel) pidListPanel.getComponent(i)).getComponent(3)).getComponent(2);
-            JLabel fileNameSuffixText = (JLabel) ((JPanel) pidListPanel.getComponent(i)).getComponent(4);
-            String fileName = fileNameText.getText().concat(fileNameSuffixText.getText());
-
+        FileOutputStream fos = null;
+        try {
             JFileChooser jfc = new JFileChooser();
             jfc.setCurrentDirectory(defaultFilePath);
             jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-//            jfc.addChoosableFileFilter(new FileNameExtensionFilter("Excel(*.xls,*.xlsx)", "xls", "xlsx"));
             if (JFileChooser.APPROVE_OPTION == jfc.showSaveDialog(frame)) {
-                FileOutputStream fos = null;
-                File currentFile = new File(jfc.getCurrentDirectory() + fileName);
-                try {
+                for (int i = 0; i < pidListPanel.getComponentCount(); i++) {
+                    JTextField fileNameText = (JTextField) ((JPanel) ((JPanel) pidListPanel.getComponent(i)).getComponent(3)).getComponent(2);
+                    JLabel fileNameSuffixText = (JLabel) ((JPanel) pidListPanel.getComponent(i)).getComponent(4);
+                    String fileName = fileNameText.getText().concat(fileNameSuffixText.getText());
+                    List<String> currentMacList = macList.get(i);
+                    File currentFile = new File(jfc.getSelectedFile() + File.separator + fileName);
+
                     // 创建Excel
                     XSSFWorkbook sheets = new XSSFWorkbook();
                     // 创建工作表sheet
@@ -282,8 +306,8 @@ public class CreateMacConfirmActionListener {
                     cell.setCellValue("MAC地址");
                     cell.setCellStyle(xssfCellStyle);
 
-                    // 写入数据内容 TODO macList是否分开？
-                    for (int d = 1; d <= macList.size(); ++d) {
+                    // 写入数据内容
+                    for (int d = 1; d <= currentMacList.size(); ++d) {
                         Row nextRow = sheet.createRow(d);
                         cell = nextRow.createCell(0);
 
@@ -293,27 +317,26 @@ public class CreateMacConfirmActionListener {
                         cell.setCellValue(ConvertUtil.ascii2hex(pid));
 
                         cell = nextRow.createCell(1);
-                        cell.setCellValue(String.valueOf(macList.get(d - 1)));
+                        cell.setCellValue(String.valueOf(currentMacList.get(d - 1)));
                     }
 
                     currentFile.createNewFile();
                     fos = new FileOutputStream(currentFile);
                     sheets.write(fos);
                     defaultFilePath = currentFile;
-
-                } catch (IOException e) {
-                    JOptionPane.showMessageDialog(frame, "写入Excel文件异常！", "Error", JOptionPane.ERROR_MESSAGE);
-                } finally {
-                    try {
-                        if (fos != null) {
-                            fos.flush();
-                            fos.close();
-                            JOptionPane.showMessageDialog(frame, "写入Excel完成", "done", JOptionPane.INFORMATION_MESSAGE);
-                        }
-                    } catch (IOException e) {
-                        JOptionPane.showMessageDialog(frame, "writeToExcel关闭文件流异常！", "Warning", JOptionPane.WARNING_MESSAGE);
-                    }
                 }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(frame, "写入Excel文件异常！", "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.flush();
+                    fos.close();
+                    JOptionPane.showMessageDialog(frame, "写入Excel完成", "done", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(frame, "writeToExcel关闭文件流异常！", "Warning", JOptionPane.WARNING_MESSAGE);
             }
         }
     }
