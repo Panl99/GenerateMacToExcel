@@ -1,5 +1,7 @@
 package main;
 
+import java.math.BigInteger;
+
 /**
  * @author lp
  * @date 2021/7/19 11:56
@@ -52,11 +54,24 @@ public class ConvertUtil {
         return (String.valueOf((char) n));
     }
 
+    /**
+     * 十六进制转十进制
+     *
+     * @param n 十六进制字符串
+     * @return
+     */
+    public static String hex2decimal(String n) {
+        return new BigInteger(n,16).toString();
+    }
+
     public static void main(String[] args) {
         System.out.println("hex2ascii(\"61\") = " + hex2ascii("61")); // a
         System.out.println("ascii2hex(\"abcABC1590\") = " + ascii2hex("abcABC1590")); // 61626341424331353930
 
         System.out.println("ascii2decimal(\"abcABC1590\") = " + ascii2decimal("abcABC1590")); // 97989965666749535748
         System.out.println("char2ascii(128) = " + decimal2ascii(126)); // ~
+
+        // 842156119
+        System.out.println("hex2decimal(\"32324857\") = " + hex2decimal("61626341424331353930")); // 459884481828118718658864
     }
 }

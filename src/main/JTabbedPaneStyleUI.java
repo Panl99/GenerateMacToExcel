@@ -25,11 +25,9 @@ import java.util.Map;
  **/
 public class JTabbedPaneStyleUI {
     private JFrame frame;
-    private String currentTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
     private String fileNameDelimiter = "-";
     private String fileNameSuffix = ".xlsx";
 
-    String initPidTextValue = fileNameDelimiter.concat(currentTime).concat(fileNameSuffix);
     int initIndex = 1;
 
     public void createGUI() {
@@ -269,8 +267,9 @@ public class JTabbedPaneStyleUI {
         JTextField fileNameText = (JTextField) componentMap.get(fileNamePanelKey).getComponent(2);
 
         // 4
+        String currentFileNameSuffixValue = fileNameDelimiter.concat(new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date())).concat(fileNameSuffix);
         JLabel fileNameSuffixLabel = new JLabel();
-        fileNameSuffixLabel.setText(initPidTextValue);
+        fileNameSuffixLabel.setText(currentFileNameSuffixValue);
         fileNameSuffixLabel.setForeground(Color.GRAY);
         String fileNameSuffixLabelKey = "fileNameSuffixLabel" + index;
         componentMap.put(fileNameSuffixLabelKey, fileNameSuffixLabel);
@@ -283,9 +282,9 @@ public class JTabbedPaneStyleUI {
                 try {
                     String text = document.getText(0, document.getLength()).trim();
                     if (text.length() > 0) {
-                        currentLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
+                        currentLabel.setText(fileNameDelimiter.concat(text.trim()).concat(currentFileNameSuffixValue));
                     } else {
-                        currentLabel.setText(initPidTextValue);
+                        currentLabel.setText(currentFileNameSuffixValue);
                     }
                 } catch (BadLocationException badLocationException) {
                     badLocationException.printStackTrace();
@@ -298,9 +297,9 @@ public class JTabbedPaneStyleUI {
                 try {
                     String text = document.getText(0, document.getLength()).trim();
                     if (text.length() > 0) {
-                        currentLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
+                        currentLabel.setText(fileNameDelimiter.concat(text.trim()).concat(currentFileNameSuffixValue));
                     } else {
-                        currentLabel.setText(initPidTextValue);
+                        currentLabel.setText(currentFileNameSuffixValue);
                     }
                 } catch (BadLocationException badLocationException) {
                     badLocationException.printStackTrace();
@@ -313,9 +312,9 @@ public class JTabbedPaneStyleUI {
                 try {
                     String text = document.getText(0, document.getLength()).trim();
                     if (text.length() > 0) {
-                        currentLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
+                        currentLabel.setText(fileNameDelimiter.concat(text.trim()).concat(currentFileNameSuffixValue));
                     } else {
-                        currentLabel.setText(initPidTextValue);
+                        currentLabel.setText(currentFileNameSuffixValue);
                     }
                 } catch (BadLocationException badLocationException) {
                     badLocationException.printStackTrace();
@@ -504,7 +503,7 @@ public class JTabbedPaneStyleUI {
         c7.insets.left = 5;
         c7.anchor = GridBagConstraints.WEST;
         JLabel remindLabel2 = new JLabel();
-        remindLabel2.setText("<html><body>提示：<br> 1. pid非空，只支持数字和字母，区分大小写，最长64位； <br> 2. 生成realtek方案的三元组文件时，pid会转换为10进制；(telink方案pid不变) <br> 3. telink方案: cid非空，只支持数字和字母，区分大小写，最长64位；(realtek方案不处理cid) <br> 4. 点击按钮选择文件保存位置，输入文件名生成对应文件。 <body></html>");
+        remindLabel2.setText("<html><body>提示：<br> 1. pid非空，只支持数字和字母，区分大小写，最长64位； <br> 2. telink方案pid会转换为16进制；realtek方案pid会转换为16进制的10进制； <br> 3. telink方案: cid非空，只支持数字和字母，区分大小写，最长64位；(realtek方案不处理cid) <br> 4. 点击按钮选择文件保存位置，输入文件名生成对应文件。 <body></html>");
         remindLabel2.setForeground(Color.GRAY);
         //generateTxtPanel.add(Box.createVerticalStrut(20));
         generateTxtPanel.add(remindLabel2, c7);

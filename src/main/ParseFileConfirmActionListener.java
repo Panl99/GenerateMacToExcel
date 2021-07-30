@@ -67,9 +67,6 @@ public class ParseFileConfirmActionListener {
 
         // 写入txt
         writeToTxt(file.getParent(), content);
-
-        //textArea.append("【时间】" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()) + "\n");
-        //textArea.append(content + "\n");
     }
 
     private boolean isTelink() {
@@ -157,10 +154,10 @@ public class ParseFileConfirmActionListener {
                 if (row != null) {
                     if (isTelink()) {
                         // 要求用tab隔开 \t
-                        sb.append(pid).append("\t").append(row.getCell(1)).append("\t").append(row.getCell(2)).append("\t").append(cid).append("\n");
+                        sb.append(ConvertUtil.ascii2hex(pid)).append("\t").append(row.getCell(1)).append("\t").append(row.getCell(2)).append("\t").append(cid).append("\n");
                     } else if (isRealtek()) {
-                        // 要求用,隔开
-                        sb.append(ConvertUtil.ascii2decimal(pid)).append(",").append(row.getCell(2)).append(",").append(row.getCell(1)).append("\n");
+                        // 要求用,隔开；转成16进制的10进制
+                        sb.append(ConvertUtil.hex2decimal(ConvertUtil.ascii2hex(pid))).append(",").append(row.getCell(2)).append(",").append(row.getCell(1)).append("\n");
                     }
                 }
             }
@@ -197,7 +194,7 @@ public class ParseFileConfirmActionListener {
         jfc.setCurrentDirectory(defaultFilePath);
         jfc.addChoosableFileFilter(new FileNameExtensionFilter("Txt(*.txt)", "txt"));
         if(JFileChooser.APPROVE_OPTION == jfc.showSaveDialog(frame)) {
-            File saveFile = jfc.getSelectedFile();
+            File saveFile = new File(jfc.getSelectedFile().toString().trim().endsWith(".txt") ? jfc.getSelectedFile().toString().trim() : jfc.getSelectedFile().toString().trim().concat(".txt"));
             try {
                 if (!saveFile.exists()) {
                     saveFile.createNewFile();
