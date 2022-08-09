@@ -25,11 +25,9 @@ import java.util.Map;
  **/
 public class JTabbedPaneStyleUI {
     private JFrame frame;
-    private String currentTime = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
     private String fileNameDelimiter = "-";
     private String fileNameSuffix = ".xlsx";
 
-    String initPidTextValue = fileNameDelimiter.concat(currentTime).concat(fileNameSuffix);
     int initIndex = 1;
 
     public void createGUI() {
@@ -170,78 +168,6 @@ public class JTabbedPaneStyleUI {
         JScrollPane pidListScrollPane = new JScrollPane(pidListPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         generateMacPanel.add(pidListScrollPane, c01);
 
-        // 删除一行
-//        JButton delPidContentPanelButton = (JButton) pidContentPanel.getComponent(5);
-//        delPidContentPanelButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                Container buttonParent = delPidContentPanelButton.getParent().getParent();
-//                if (buttonParent.getComponentCount() < 2) {
-//                    JOptionPane.showMessageDialog(frame, "还是留一个吧", "Warning", JOptionPane.WARNING_MESSAGE);
-//                    return;
-//                }
-//                buttonParent.remove(0);
-//                for (int i = 0; i < buttonParent.getComponentCount(); i++) {
-//                    JLabel numLabel = (JLabel) ((JPanel) buttonParent.getComponent(i)).getComponent(0);
-//                    String numStr = numLabel.getText().substring(0, numLabel.getText().indexOf(". "));
-//                    numLabel.setText(Integer.parseInt(numStr) - 1 + ". ");
-//                }
-//                initIndex = buttonParent.getComponentCount();
-//                refreshPane(pidContentPanel, null);
-//            }
-//        });
-
-//        // 监听文本框内容显示到文件名后缀
-//        JPanel pidPanel = (JPanel) pidContentPanel.getComponent(1);
-//        JTextField pidText = (JTextField) pidPanel.getComponent(2);
-//        JLabel fileNameSuffixLabel = (JLabel) pidContentPanel.getComponent(4);
-//        pidText.getDocument().addDocumentListener(new DocumentListener() {
-//            @Override
-//            public void insertUpdate(DocumentEvent e) {
-//                Document document = e.getDocument();
-//                try {
-//                    String text = document.getText(0, document.getLength()).trim();
-//                    if (text.length() > 0) {
-//                        fileNameSuffixLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
-//                    } else {
-//                        fileNameSuffixLabel.setText(initPidTextValue);
-//                    }
-//                } catch (BadLocationException badLocationException) {
-//                    badLocationException.printStackTrace();
-//                }
-//            }
-//
-//            @Override
-//            public void removeUpdate(DocumentEvent e) {
-//                Document document = e.getDocument();
-//                try {
-//                    String text = document.getText(0, document.getLength()).trim();
-//                    if (text.length() > 0) {
-//                        fileNameSuffixLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
-//                    } else {
-//                        fileNameSuffixLabel.setText(initPidTextValue);
-//                    }
-//                } catch (BadLocationException badLocationException) {
-//                    badLocationException.printStackTrace();
-//                }
-//            }
-//
-//            @Override
-//            public void changedUpdate(DocumentEvent e) {
-//                Document document = e.getDocument();
-//                try {
-//                    String text = document.getText(0, document.getLength()).trim();
-//                    if (text.length() > 0) {
-//                        fileNameSuffixLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
-//                    } else {
-//                        fileNameSuffixLabel.setText(initPidTextValue);
-//                    }
-//                } catch (BadLocationException badLocationException) {
-//                    badLocationException.printStackTrace();
-//                }
-//            }
-//        });
-
         // 3. 添加pid按钮栏
         GridBagConstraints c02 = new GridBagConstraints();
         c02.gridx = 0;
@@ -312,9 +238,15 @@ public class JTabbedPaneStyleUI {
 
     private JPanel getPidContentPanel(int index) {
         // 2.1 pid内容行
-        JPanel pidContentPanel = new JPanel();
+        JPanel pidContentPanel = new JPanel() {
+            @Override
+            public Dimension getMaximumSize() {
+                Dimension d = getPreferredSize();
+                d.width = Integer.MAX_VALUE;
+                return d;
+            }
+        };
         pidContentPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-//        pidContentPanel.setSize(new Dimension(170, 30));
 
         // 0
         JLabel indexLabel = new JLabel(index + ". ");
@@ -335,8 +267,9 @@ public class JTabbedPaneStyleUI {
         JTextField fileNameText = (JTextField) componentMap.get(fileNamePanelKey).getComponent(2);
 
         // 4
+        String currentFileNameSuffixValue = fileNameDelimiter.concat(new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date())).concat(fileNameSuffix);
         JLabel fileNameSuffixLabel = new JLabel();
-        fileNameSuffixLabel.setText(initPidTextValue);
+        fileNameSuffixLabel.setText(currentFileNameSuffixValue);
         fileNameSuffixLabel.setForeground(Color.GRAY);
         String fileNameSuffixLabelKey = "fileNameSuffixLabel" + index;
         componentMap.put(fileNameSuffixLabelKey, fileNameSuffixLabel);
@@ -349,9 +282,9 @@ public class JTabbedPaneStyleUI {
                 try {
                     String text = document.getText(0, document.getLength()).trim();
                     if (text.length() > 0) {
-                        currentLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
+                        currentLabel.setText(fileNameDelimiter.concat(text.trim()).concat(currentFileNameSuffixValue));
                     } else {
-                        currentLabel.setText(initPidTextValue);
+                        currentLabel.setText(currentFileNameSuffixValue);
                     }
                 } catch (BadLocationException badLocationException) {
                     badLocationException.printStackTrace();
@@ -364,9 +297,9 @@ public class JTabbedPaneStyleUI {
                 try {
                     String text = document.getText(0, document.getLength()).trim();
                     if (text.length() > 0) {
-                        currentLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
+                        currentLabel.setText(fileNameDelimiter.concat(text.trim()).concat(currentFileNameSuffixValue));
                     } else {
-                        currentLabel.setText(initPidTextValue);
+                        currentLabel.setText(currentFileNameSuffixValue);
                     }
                 } catch (BadLocationException badLocationException) {
                     badLocationException.printStackTrace();
@@ -379,9 +312,9 @@ public class JTabbedPaneStyleUI {
                 try {
                     String text = document.getText(0, document.getLength()).trim();
                     if (text.length() > 0) {
-                        currentLabel.setText(fileNameDelimiter.concat(text.trim()).concat(fileNameDelimiter).concat(currentTime).concat(fileNameSuffix));
+                        currentLabel.setText(fileNameDelimiter.concat(text.trim()).concat(currentFileNameSuffixValue));
                     } else {
-                        currentLabel.setText(initPidTextValue);
+                        currentLabel.setText(currentFileNameSuffixValue);
                     }
                 } catch (BadLocationException badLocationException) {
                     badLocationException.printStackTrace();
@@ -570,7 +503,7 @@ public class JTabbedPaneStyleUI {
         c7.insets.left = 5;
         c7.anchor = GridBagConstraints.WEST;
         JLabel remindLabel2 = new JLabel();
-        remindLabel2.setText("<html><body>提示：<br> 1. pid非空，只支持数字和字母，区分大小写，最长64位； <br> 2. 生成realtek方案的三元组文件时，pid会转换为10进制；(telink方案pid不变) <br> 3. telink方案: cid非空，只支持数字和字母，区分大小写，最长64位；(realtek方案不处理cid) <br> 4. 点击按钮选择文件保存位置，输入文件名生成对应文件。 <body></html>");
+        remindLabel2.setText("<html><body>提示：<br> 1. pid非空，只支持数字和字母，区分大小写，最长64位； <br> 2. telink方案pid会转换为16进制；realtek方案pid会转换为16进制的10进制； <br> 3. telink方案: cid非空，只支持数字和字母，区分大小写，最长64位；(realtek方案不处理cid) <br> 4. 点击按钮选择文件保存位置，输入文件名生成对应文件。 <body></html>");
         remindLabel2.setForeground(Color.GRAY);
         //generateTxtPanel.add(Box.createVerticalStrut(20));
         generateTxtPanel.add(remindLabel2, c7);
